@@ -1,18 +1,20 @@
 title:
   original: Check that Node object names are compliant
-  translation: ~
+  translation: Vérifie qu'e les noms de l'objet de type Node sont conformes.
 arguments:
   node:
     original: the Node object, or a dataframe ready to be parsed by \code{data.tree::as.Node()}
-    translation: ~
+    translation: l'objet de type Node, ou un dataframe prêt à être transformé en \code{data.tree::as.Node()}
 value:
   original: |
     node if it is compliant, else an Error with the column names to fix
-  translation: ~
+  translation: |
+    l'objet \code{Node} si il est conforme, sinon, un message d'erreur avec les noms de 
+    colonne problématique.
 description:
   original: |
     Check that Node object names are compliant
-  translation: ~
+  translation: Vérifie que les noms dans l'objet \code{Node} sont conformes.
 examples:
   original: |
     \dontshow{if ((require("data.tree") || require("dplyr"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
