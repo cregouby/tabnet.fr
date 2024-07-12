@@ -158,78 +158,104 @@ arguments:
       Number of independent Gated Linear Units layers at each step of the encoder.
       Usual values range from 1 to 5.
     translation: |-
-      Nombre de Gated-Linear Unit indépendantes à chaque step de l'architecture.
+      Nombre de Gated-Linear Unit indépendantes de l'encodeur à chaque step de l'architecture.
   num_shared:
     original: |-
       Number of shared Gated Linear Units at each step of the encoder. Usual values
-      Usual values range from 1 to 5.
+      at each step of the decoder. range from 1 to 5
     translation: |-
-      Nombre de Gated-Linear Unit partagées à chaque step de l'encodeur.
+      Nombre de Gated-Linear Unit partagées de l'encodeur à chaque step de l'architecture.
+      Typiquement entre 1 à 5.
   num_independent_decoder:
     original: |-
       For pretraining, number of independent Gated Linear Units layers
-      at each step of the decoder. range from 1 to 5
-    translation: ~
+      Usual values range from 1 to 5.
+    translation: |-
+      Nombre de Gated-Linear Unit indépendantes du décodeur à chaque step de l'architecture.
+      Typiquement entre 1 à 5. (Pré-entrainement seulement)
   num_shared_decoder:
     original: |-
       For pretraining, number of shared Gated Linear Units at each step of the
       decoder. Usual values range from 1 to 5.
-    translation: ~
+    translation: |-
+      Nombre de Gated-Linear Unit partagées du décodeur à chaque step de l'architecture.
+      Typiquement entre 1 à 5. (Pré-entraînement seulement)
   momentum:
     original: |-
       Momentum for batch normalization, typically ranges from 0.01
       to 0.4 (default=0.02)
-    translation: ~
+    translation: |-
+      Momentum utilisé pour la normalisation du batch. Typiquement entre 0.01 et 0.4. 0.02 par défaut.
   pretraining_ratio:
     original: |-
       Ratio of features to mask for reconstruction during
       pretraining.  Ranges from 0 to 1 (default=0.5)
-    translation: ~
+    translation: |-
+      Ratio de variables à reconstruire pendant le pré-entraînement. À prendre entre
+      0 et 1. 0.5 par défaut.
   verbose:
     original: |-
       (logical) Whether to print progress and loss values during
       training.
-    translation: ~
+    translation: |-
+      (logique) Doit-on afficher la progression et les valeurs de la fonction de coût
+      pendant l'apprentissage
   device:
     original: |-
       the device to use for training. "cpu" or "cuda". The default ("auto")
       uses  to "cuda" if it's available, otherwise uses "cpu".
-    translation: ~
+    translation: |-
+      la carte utilisé pour l'entraînement, entre "cpu" pour le processeur et "cuda"
+      pour la carte graphique. Par défaut "auto" utilise "cuda" si c'est disponible, sinon "cpu".
   importance_sample_size:
     original: |-
       sample of the dataset to compute importance metrics.
       If the dataset is larger than 1e5 obs we will use a sample of size 1e5 and
       display a warning.
-    translation: ~
+    translation: |-
+      taille du jeu de donnée pour le calcul de l'importance des variables. Si le jeu de données
+      est plus grand que 1e5 observations, il sera échantillonné à 1e5 observations avec un
+      message de Warning.
   early_stopping_monitor:
     original: Metric to monitor for early_stopping. One of "valid_loss", "train_loss"
       or "auto" (defaults to "auto").
-    translation: ~
+    translation: |-
+      Métrique à monitorer pour l'early-stopping. Parmi "valid-loss", "train-loss", et "auto"
+      pour respectivement la valeur de la fonction de coût sur le jeu de données 
+      de validation, d'entraînement, et le premier des deux disponibles.
   early_stopping_tolerance:
     original: |-
       Minimum relative improvement to reset the patience counter.
       0.01 for 1\% tolerance (default 0)
-    translation: ~
+    translation: |-
+      Valeur minimum d'amélioration entre deux époques pour remettre à zero le compteur
+      de patience.
   early_stopping_patience:
     original: Number of epochs without improving until stopping training. (default=5)
-    translation: ~
+    translation: |-
+      Nombre d'époques sans amélioration avant d'arrêter l'entraînement. (5 par défaut)
   num_workers:
     original: |-
       (int, optional): how many subprocesses to use for data
       loading. 0 means that the data will be loaded in the main process.
       (default: \code{0})
-    translation: ~
+    translation: |-
+      (entier, optionnel) Nombre de sous-process à utiliser pour le chargement des données.
+      \code{0} pour n'utiliser que le process principal. (\code{0} par défaut)
   skip_importance:
     original: 'if feature importance calculation should be skipped (default: \code{FALSE})'
-    translation: ~
+    translation: |-
+      bypass du calcul de l'importance des variables
 value:
   original: |
     A named list with all hyperparameters of the TabNet implementation.
-  translation: ~
+  translation: |-
+    Une liste nomée de tous les hyper-paramêtres de l'implémentation de TabNet.
 description:
   original: |
     Configuration for TabNet models
-  translation: ~
+  translation: |-
+    Configuration du modèle TabNet
 untranslatable:
 - alias
 - name
