@@ -1,14 +1,16 @@
 title:
   original: Pipe operator
-  translation: ~
+  translation: L'opérateur de pipe
 value:
   original: |
     Returns \code{rhs(lhs)}.
-  translation: ~
+  translation: 
+    renvoie \code{rhs(lhs)}.
 description:
   original: |
     See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
-  translation: ~
+  translation: 
+    D'après \code{magrittr::\link[magrittr:pipe]{\%>\%}}
 untranslatable:
 - alias
 - name

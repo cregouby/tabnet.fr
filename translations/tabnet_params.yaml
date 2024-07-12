@@ -1,28 +1,33 @@
 title:
   original: Parameters for the tabnet model
-  translation: ~
+  translation: Les paramêtres du modèle tabnet
 arguments:
   range:
     original: the default range for the parameter value
-    translation: ~
+    translation: la plage de valeurs par défaut pour le paramêtre
   trans:
     original: whether to apply a transformation to the parameter
-    translation: ~
+    translation: doit-on appliquer une transformation au paramêtre.
   values:
     original: |-
       possible values for factor parameters
 
       These functions are used with \code{tune} grid functions to generate
       candidates.
-    translation: ~
+    translation: |-
+      les valeurs acceptables pour les paramêtres catégoriels.
+      
+      Ces fonctions sont utiles avec la fonction \code{tune} grid pour la 
+      génération des candidats
 value:
   original: |
     A \code{dials} parameter to be used when tuning TabNet models.
-  translation: ~
+  translation: |
+    Un parametre \code{dials} utilisé pour la mise-au-point du modèle TabNet.
 description:
   original: |
     Parameters for the tabnet model
-  translation: ~
+  translation: Les paramêtres du modèle tabnet
 untranslatable:
 - alias
 - name

@@ -1,22 +1,25 @@
 title:
   original: Prune top layer(s) of a tabnet network
-  translation: ~
+  translation: Étête la ou les couches hautes du réseau tabnet
 arguments:
   x:
     original: nn_network to prune
-    translation: ~
+    translation: le réseau nn_network à étêter
   head_size:
     original: number of nn_layers to prune, should be less than 2
-    translation: ~
+    translation: le nombre de couches à supprimer, doit être inférieur à 2
 value:
   original: |
     a tabnet network with the top nn_layer removed
-  translation: ~
+  translation: |
+    le réseau tabnet sans ses dernières couches
 description:
   original: |
     Prune \code{head_size} last layers of a tabnet network in order to
     use the pruned module as a sequential embedding module.
-  translation: ~
+  translation: |
+    Étête les \code{head_size} dernières couches d'un réseau tabnet, dans le but
+    d'utiliser le modure résultat comme un module d'embedding séquentiel.
 untranslatable:
 - alias
 - name
