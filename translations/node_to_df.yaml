@@ -1,0 +1,38 @@
+title:
+  original: Turn a Node object into predictor and outcome.
+  translation: ~
+arguments:
+  x:
+    original: Node object
+    translation: ~
+  drop_last_level:
+    original: TRUE unused
+    translation: ~
+value:
+  original: |
+    a named list of x and y, being respectively the predictor data-frame and the outcomes data-frame,
+    as expected inputs for \code{hardhat::mold()} function.
+  translation: ~
+description:
+  original: |
+    Turn a Node object into predictor and outcome.
+  translation: ~
+examples:
+  original: |
+    \dontshow{if ((require("data.tree") || require("dplyr"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+    library(dplyr)
+    library(data.tree)
+    data(starwars)
+    starwars_tree <- starwars %>%
+      mutate(pathString = paste("tree", species, homeworld, `name`, sep = "/")) %>%
+      as.Node()
+    node_to_df(starwars_tree)$x %>% head()
+    node_to_df(starwars_tree)$y %>% head()
+    \dontshow{\}) # examplesIf}
+  translation: ~
+untranslatable:
+- alias
+- name
+- keyword
+- concept
+- usage

@@ -1,0 +1,25 @@
+title:
+  original: Prune top layer(s) of a tabnet network
+  translation: ~
+arguments:
+  x:
+    original: nn_network to prune
+    translation: ~
+  head_size:
+    original: number of nn_layers to prune, should be less than 2
+    translation: ~
+value:
+  original: |
+    a tabnet network with the top nn_layer removed
+  translation: ~
+description:
+  original: |
+    Prune \code{head_size} last layers of a tabnet network in order to
+    use the pruned module as a sequential embedding module.
+  translation: ~
+untranslatable:
+- alias
+- name
+- keyword
+- concept
+- usage

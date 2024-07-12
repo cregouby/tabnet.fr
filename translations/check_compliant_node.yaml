@@ -1,0 +1,37 @@
+title:
+  original: Check that Node object names are compliant
+  translation: ~
+arguments:
+  node:
+    original: the Node object, or a dataframe ready to be parsed by \code{data.tree::as.Node()}
+    translation: ~
+value:
+  original: |
+    node if it is compliant, else an Error with the column names to fix
+  translation: ~
+description:
+  original: |
+    Check that Node object names are compliant
+  translation: ~
+examples:
+  original: |
+    \dontshow{if ((require("data.tree") || require("dplyr"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+    library(dplyr)
+    library(data.tree)
+    data(starwars)
+    starwars_tree <- starwars %>%
+      mutate(pathString = paste("tree", species, homeworld, `name`, sep = "/"))
+
+    # pre as.Node() check
+    try(check_compliant_node(starwars_tree))
+
+    # post as.Node() check
+    check_compliant_node(as.Node(starwars_tree))
+    \dontshow{\}) # examplesIf}
+  translation: ~
+untranslatable:
+- alias
+- name
+- keyword
+- concept
+- usage

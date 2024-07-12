@@ -1,0 +1,17 @@
+title:
+  original: Pipe operator
+  translation: ~
+value:
+  original: |
+    Returns \code{rhs(lhs)}.
+  translation: ~
+description:
+  original: |
+    See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
+  translation: ~
+untranslatable:
+- alias
+- name
+- keyword
+- concept
+- usage

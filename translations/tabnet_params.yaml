@@ -1,0 +1,31 @@
+title:
+  original: Parameters for the tabnet model
+  translation: ~
+arguments:
+  range:
+    original: the default range for the parameter value
+    translation: ~
+  trans:
+    original: whether to apply a transformation to the parameter
+    translation: ~
+  values:
+    original: |-
+      possible values for factor parameters
+
+      These functions are used with \code{tune} grid functions to generate
+      candidates.
+    translation: ~
+value:
+  original: |
+    A \code{dials} parameter to be used when tuning TabNet models.
+  translation: ~
+description:
+  original: |
+    Parameters for the tabnet model
+  translation: ~
+untranslatable:
+- alias
+- name
+- keyword
+- concept
+- usage

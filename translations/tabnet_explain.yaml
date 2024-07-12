@@ -1,0 +1,56 @@
+title:
+  original: Interpretation metrics from a TabNet model
+  translation: ~
+arguments:
+  object:
+    original: a TabNet fit object
+    translation: ~
+  new_data:
+    original: a data.frame to obtain interpretation metrics.
+    translation: ~
+value:
+  original: |
+    Returns a list with
+    \itemize{
+    \item \code{M_explain}: the aggregated feature importance masks as detailed in
+    TabNet's paper.
+    \item \code{masks} a list containing the masks for each step.
+    }
+  translation: ~
+description:
+  original: |
+    Interpretation metrics from a TabNet model
+  translation: ~
+examples:
+  original: |
+    \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
+    set.seed(2021)
+
+    n <- 1000
+    x <- data.frame(
+      x = rnorm(n),
+      y = rnorm(n),
+      z = rnorm(n)
+    )
+
+    y <- x$x
+
+    fit <- tabnet_fit(x, y, epochs = 20,
+                      num_steps = 1,
+                      batch_size = 512,
+                      attention_width = 1,
+                      num_shared = 1,
+                      num_independent = 1)
+
+
+     ex <- tabnet_explain(fit, x)
+
+    \dontshow{\}) # examplesIf}
+  translation: ~
+untranslatable:
+- alias
+- name
+- keyword
+- concept
+- usage

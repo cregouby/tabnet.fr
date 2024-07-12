@@ -1,0 +1,67 @@
+title:
+  original: TabNet Model Architecture
+  translation: ~
+arguments:
+  input_dim:
+    original: Initial number of features.
+    translation: ~
+  output_dim:
+    original: |-
+      Dimension of network output examples : one for regression, 2 for
+      binary classification etc.. Vector of those dimensions in case of multi-output.
+    translation: ~
+  n_d:
+    original: Dimension of the prediction  layer (usually between 4 and 64).
+    translation: ~
+  n_a:
+    original: Dimension of the attention  layer (usually between 4 and 64).
+    translation: ~
+  n_steps:
+    original: Number of successive steps in the network (usually between 3 and 10).
+    translation: ~
+  gamma:
+    original: Float above 1, scaling factor for attention updates (usually between
+      1 and 2).
+    translation: ~
+  cat_idxs:
+    original: Index of each categorical column in the dataset.
+    translation: ~
+  cat_dims:
+    original: Number of categories in each categorical column.
+    translation: ~
+  cat_emb_dim:
+    original: |-
+      Size of the embedding of categorical features if int, all categorical
+      features will have same embedding size if list of int, every corresponding feature will have
+      specific size.
+    translation: ~
+  n_independent:
+    original: Number of independent GLU layer in each GLU block of the encoder.
+    translation: ~
+  n_shared:
+    original: Number of independent GLU layer in each GLU block of the encoder.
+    translation: ~
+  epsilon:
+    original: Avoid log(0), this should be kept very low.
+    translation: ~
+  virtual_batch_size:
+    original: Batch size for Ghost Batch Normalization.
+    translation: ~
+  momentum:
+    original: Float value between 0 and 1 which will be used for momentum in all batch
+      norm.
+    translation: ~
+  mask_type:
+    original: 'Either "sparsemax" or "entmax" : this is the masking function to use.'
+    translation: ~
+description:
+  original: |
+    This is a \code{nn_module} representing the TabNet architecture from
+    \href{https://arxiv.org/abs/1908.07442}{Attentive Interpretable Tabular Deep Learning}.
+  translation: ~
+untranslatable:
+- alias
+- name
+- keyword
+- concept
+- usage

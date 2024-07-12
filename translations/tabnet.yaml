@@ -1,0 +1,213 @@
+title:
+  original: Parsnip compatible tabnet model
+  translation: ~
+arguments:
+  mode:
+    original: |-
+      A single character string for the type of model. Possible values
+      for this model are "unknown", "regression", or "classification".
+    translation: ~
+  cat_emb_dim:
+    original: |-
+      Size of the embedding of categorical features. If int, all categorical
+      features will have same embedding size, if list of int, every corresponding feature will have
+      specific embedding size.
+    translation: ~
+  decision_width:
+    original: |-
+      (int) Width of the decision prediction layer. Bigger values gives
+      more capacity to the model with the risk of overfitting. Values typically
+      range from 8 to 64.
+    translation: ~
+  attention_width:
+    original: |-
+      (int) Width of the attention embedding for each mask. According to
+      the paper n_d = n_a is usually a good choice. (default=8)
+    translation: ~
+  num_steps:
+    original: |-
+      (int) Number of steps in the architecture
+      (usually between 3 and 10)
+    translation: ~
+  mask_type:
+    original: |-
+      (character) Final layer of feature selector in the attentive_transformer
+      block, either \code{"sparsemax"} or \code{"entmax"}.Defaults to \code{"sparsemax"}.
+    translation: ~
+  num_independent:
+    original: |-
+      Number of independent Gated Linear Units layers at each step of the encoder.
+      Usual values range from 1 to 5.
+    translation: ~
+  num_shared:
+    original: |-
+      Number of shared Gated Linear Units at each step of the encoder. Usual values
+      at each step of the decoder. range from 1 to 5
+    translation: ~
+  num_independent_decoder:
+    original: |-
+      For pretraining, number of independent Gated Linear Units layers
+      Usual values range from 1 to 5.
+    translation: ~
+  num_shared_decoder:
+    original: |-
+      For pretraining, number of shared Gated Linear Units at each step of the
+      decoder. Usual values range from 1 to 5.
+    translation: ~
+  penalty:
+    original: |-
+      This is the extra sparsity loss coefficient as proposed
+      in the original paper. The bigger this coefficient is, the sparser your model
+      will be in terms of feature selection. Depending on the difficulty of your
+      problem, reducing this value could help (default 1e-3).
+    translation: ~
+  feature_reusage:
+    original: |-
+      (float) This is the coefficient for feature reusage in the masks.
+      A value close to 1 will make mask selection least correlated between layers.
+      Values range from 1.0 to 2.0.
+    translation: ~
+  momentum:
+    original: |-
+      Momentum for batch normalization, typically ranges from 0.01
+      to 0.4 (default=0.02)
+    translation: ~
+  epochs:
+    original: (int) Number of training epochs.
+    translation: ~
+  batch_size:
+    original: |-
+      (int) Number of examples per batch, large batch sizes are
+      recommended. (default: 1024^2)
+    translation: ~
+  virtual_batch_size:
+    original: |-
+      (int) Size of the mini batches used for
+      "Ghost Batch Normalization" (default=256^2)
+    translation: ~
+  learn_rate:
+    original: initial learning rate for the optimizer.
+    translation: ~
+  optimizer:
+    original: |-
+      the optimization method. currently only 'adam' is supported,
+      you can also pass any torch optimizer function.
+    translation: ~
+  loss:
+    original: |-
+      (character or function) Loss function for training (default to mse
+      for regression and cross entropy for classification)
+    translation: ~
+  clip_value:
+    original: |-
+      If a float is given this will clip the gradient at
+      clip_value. Pass \code{NULL} to not clip.
+    translation: ~
+  drop_last:
+    original: |-
+      (logical) Whether to drop last batch if not complete during
+      training
+    translation: ~
+  lr_scheduler:
+    original: |-
+      if \code{NULL}, no learning rate decay is used. If "step"
+      decays the learning rate by \code{lr_decay} every \code{step_size} epochs. If "reduce_on_plateau"
+      decays the learning rate by \code{lr_decay} when no improvement after \code{step_size} epochs.
+      It can also be a \link[torch:lr_scheduler]{torch::lr_scheduler} function that only takes the optimizer
+      as parameter. The \code{step} method is called once per epoch.
+    translation: ~
+  lr_decay:
+    original: |-
+      multiplies the initial learning rate by \code{lr_decay} every
+      \code{step_size} epochs. Unused if \code{lr_scheduler} is a \code{torch::lr_scheduler}
+      or \code{NULL}.
+    translation: ~
+  step_size:
+    original: |-
+      the learning rate scheduler step size. Unused if
+      \code{lr_scheduler} is a \code{torch::lr_scheduler} or \code{NULL}.
+    translation: ~
+  checkpoint_epochs:
+    original: |-
+      checkpoint model weights and architecture every
+      \code{checkpoint_epochs}. (default is 10). This may cause large memory usage.
+      Use \code{0} to disable checkpoints.
+    translation: ~
+  verbose:
+    original: |-
+      (logical) Whether to print progress and loss values during
+      training.
+    translation: ~
+  importance_sample_size:
+    original: |-
+      sample of the dataset to compute importance metrics.
+      If the dataset is larger than 1e5 obs we will use a sample of size 1e5 and
+      display a warning.
+    translation: ~
+  early_stopping_monitor:
+    original: Metric to monitor for early_stopping. One of "valid_loss", "train_loss"
+      or "auto" (defaults to "auto").
+    translation: ~
+  early_stopping_tolerance:
+    original: |-
+      Minimum relative improvement to reset the patience counter.
+      0.01 for 1\% tolerance (default 0)
+    translation: ~
+  early_stopping_patience:
+    original: Number of epochs without improving until stopping training. (default=5)
+    translation: ~
+  skip_importance:
+    original: 'if feature importance calculation should be skipped (default: \code{FALSE})'
+    translation: ~
+  tabnet_model:
+    original: |-
+      A previously fitted TabNet model object to continue the fitting on.
+      if \code{NULL} (the default) a brand new model is initialized.
+    translation: ~
+  from_epoch:
+    original: |-
+      When a \code{tabnet_model} is provided, restore the network weights from a specific epoch.
+      Default is last available checkpoint for restored model, or last epoch for in-memory model.
+    translation: ~
+value:
+  original: |
+    A TabNet \code{parsnip} instance. It can be used to fit tabnet models using
+    \code{parsnip} machinery.
+  translation: ~
+description:
+  original: |
+    Parsnip compatible tabnet model
+  translation: ~
+section{Threading}:
+  original: |
+    TabNet uses \code{torch} as its backend for computation and \code{torch} uses all
+    available threads by default.
+
+    You can control the number of threads used by \code{torch} with:
+
+    \if{html}{\out{<div class="sourceCode">}}\preformatted{torch::torch_set_num_threads(1)
+    torch::torch_set_num_interop_threads(1)
+    }\if{html}{\out{</div>}}
+  translation: ~
+examples:
+  original: |
+    \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+    library(parsnip)
+    data("ames", package = "modeldata")
+    model <- tabnet() %>%
+      set_mode("regression") %>%
+      set_engine("torch")
+    model %>%
+      fit(Sale_Price ~ ., data = ames)
+    \dontshow{\}) # examplesIf}
+  translation: ~
+seealso:
+  original: |
+    tabnet_fit
+  translation: ~
+untranslatable:
+- alias
+- name
+- keyword
+- concept
+- usage

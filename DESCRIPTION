@@ -1,0 +1,15 @@
+Package: tabnet.fr
+Type: Translation-module
+Title: What the package does (short line)
+Version: 1.0
+Date: 2024-05-26
+Author: Who wrote it
+Maintainer: Who to complain to <yourfault@somewhere.net>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+Language: fr-FR
+Translates: tabnet (== 0.6.0)
+LazyData: true
+imports:
+    rhelpi18n
+
