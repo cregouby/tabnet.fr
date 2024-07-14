@@ -1,6 +1,6 @@
 title:
   original: Tabnet model
-  translation: ~
+  translation: le modèle Tabnet
 arguments:
   x:
     original: |-
@@ -15,58 +15,92 @@ arguments:
       The predictor data should be standardized (e.g. centered or scaled).
       The model treats categorical predictors internally thus, you don't need to
       make any treatment.
-    translation: ~
+    translation: |-
+      Suivant le contexte:
+      \itemize{
+      \item Un \strong{data.frame} des prédicterus.
+      \item Une \strong{matrice} des prédicteurs.
+      \item Une \strong{recète} contenant la specification des étapes de préprocessing
+      crée avec \code{\link[recipes:recipe]{recipes::recipe()}}.
+      }
+
+      Les données des prédicteurs doivent être normalisées (centrées ou réduites).
+      Le modèle gère les variables catégorielles, donc aucun prétraitemenent n'est nécessaire.
   '...':
     original: |-
       Model hyperparameters.
       Any hyperparameters set here will update those set by the config argument.
       See \code{\link[=tabnet_config]{tabnet_config()}} for a list of all possible hyperparameters.
-    translation: ~
+    translation: |-
+      Les hyper-paramêtres du modèle.
+      Lorsqu'il est fixé ici, un hyper-paramêtre écrase la valeur venant de l'argument de configuration.
+      \code{\link[=tabnet_config]{tabnet_config()}} donne la liste de tous les hyper-paramêtres possibles.
   'y':
     original: (optional) When \code{x} is a \strong{data frame} or \strong{matrix},
       \code{y} is the outcome
-    translation: ~
+    translation: (optionnel) Si \code{x} est un \strong{data frame} ou une \strong{matrix},
+      alors \code{y} est la variable à prédire.
   tabnet_model:
     original: |-
       A pretrained TabNet model object to continue the fitting on.
       if \code{NULL} (the default) a brand new model is initialized.
-    translation: ~
+    translation: |-
+      Un object de type Tabnet pré-entraîné sur lequel continuer l'entraînement.
+      Si \code{NULL} (par default) un nouveau modèle sera initialisé.
   config:
     original: |-
       A set of hyperparameters created using the \code{tabnet_config} function.
       If no argument is supplied, this will use the default values in \code{\link[=tabnet_config]{tabnet_config()}}.
-    translation: ~
+    translation: |-
+      Une liste des hyper-paramêtres du modèle crée avec la fonction \code{tabnet_config}.
+      Si vide, alors le modèle utilise les valeurs par défaut de \code{\link[=tabnet_config]{tabnet_config()}}.
+
   from_epoch:
     original: |-
       When a \code{tabnet_model} is provided, restore the network weights from a specific epoch.
       Default is last available checkpoint for restored model, or last epoch for in-memory model.
-    translation: ~
+    translation: |-
+      Losqu'un \code{tabnet_model} est fourni, les poids du réseau sont restaurés à partir du cliché
+      du modèle à l'époque specifiée. Par défaut, le dernier cliché du modèle est utilisé pour un
+      modèle restauré du disque, ou la dernière époque disponible pour un modèle en mémoire. 
   formula:
     original: |-
       A formula specifying the outcome terms on the left-hand side,
       and the predictor terms on the right-hand side.
-    translation: ~
+    translation: |-
+      Une formule qui spécifie la variable à prédire (partie gauche) et les prédicteurs
+      (partie droite).
   data:
     original: |-
       When a \strong{recipe} or \strong{formula} is used, \code{data} is specified as:
       \itemize{
       \item A \strong{data frame} containing both the predictors and the outcome.
       }
-    translation: ~
+    translation: |-
+      Dans le cas \strong{recipe} ou \strong{formula}, \code{data} doit contenir:
+      \itemize{
+      \item Un \strong{data frame} contenant les prédicteurs et les variables à prédire.
+      }
 value:
   original: |
     A TabNet model object. It can be used for serialization, predictions, or further fitting.
-  translation: ~
+  translation: |
+    Un objet de type Tabnet model. À utiliser ensuite pour de la sérialisation, des predictions,
+    ou pour continuer l'entraînement. 
 description:
   original: |
     Pretrain the \href{https://arxiv.org/abs/1908.07442}{TabNet: Attentive Interpretable Tabular Learning} model
     on the predictor data exclusively (unsupervised training).
-  translation: ~
+  translation: |
+    Pré-entraîne un modèle \href{https://arxiv.org/abs/1908.07442}{TabNet: Attentive Interpretable Tabular Learning}
+    exclusivement sur les prédicteurs du jeu de donnée (tâche d'entraînement non-supervisé).
 section{outcome}:
   original: |
     Outcome value are accepted here only for consistent syntax with \code{tabnet_fit}, but
     by design the outcome, if present, is ignored during pre-training.
-  translation: ~
+  translation: |
+    Variables à prédire. Utilisé ici pour la consistence de la syntaxe avec la commande
+    \code{tabnet_fit}, mais sera ignorée dans la tâche de pré-entrainement.
 section{pre-training from a previous model}:
   original: |
     When providing a parent \code{tabnet_model} parameter, the model pretraining resumes from that model weights
@@ -77,7 +111,15 @@ section{pre-training from a previous model}:
     \item the epoch related to a checkpoint matching or preceding the \code{from_epoch} value if provided
     The model pretraining metrics append on top of the parent metrics in the returned TabNet model.
     }
-  translation: ~
+  translation: |
+    Lorsqu'un modèle parent est fourni en paramêtre \code{tabnet_model}, la tâche de pré-training reprend 
+    à partir des poinds du modèle à l'époque comme suit:
+    \itemize{
+    \item la dernière époque disponible pour un modèle dans le contexte mémoire de torch
+    \item le dernier cliché du modèle pour un modèle depuis un fichier
+    \item l'époque idiquée ou précédant la valeur de \code{from_epoch}, si indiquée.
+    Les métriques d'entraînement s'ajoute à la liste existante du modèle parent dans le modèle TabNet produit.
+    }
 section{Threading}:
   original: |
     TabNet uses \code{torch} as its backend for computation and \code{torch} uses all
@@ -88,7 +130,15 @@ section{Threading}:
     \if{html}{\out{<div class="sourceCode">}}\preformatted{torch::torch_set_num_threads(1)
     torch::torch_set_num_interop_threads(1)
     }\if{html}{\out{</div>}}
-  translation: ~
+  translation: |
+    TabNet repose sur \code{torch} pour son moteur de calcul et \code{torch} 
+    utilise toutes les threads par défaut.
+
+    Vous pouver contrôler les treads que \code{torch} utilise avec:
+
+    \if{html}{\out{<div class="sourceCode">}}\preformatted{torch::torch_set_num_threads(1)
+    torch::torch_set_num_interop_threads(1)
+    }\if{html}{\out{</div>}}
 examples:
   original: |
     \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
