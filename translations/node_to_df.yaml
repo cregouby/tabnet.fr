@@ -1,6 +1,6 @@
 title:
   original: Turn a Node object into predictor and outcome.
-  translation: Transforme un objet \code{Node} en pr
+  translation: Transforme un objet \code{Node} en prédicteurs et résultats.
 arguments:
   x:
     original: Node object
@@ -14,11 +14,11 @@ value:
     as expected inputs for \code{hardhat::mold()} function.
   translation: |
     une liste nomée x et y, respectivement le data-frame des variables prédictives et le data-frame 
-    des variables de résultats, tels qu'attendus en entée de la fonction \code{hardhat::mold()}.
+    des variables de résultats, tels qu'attendus en entrée de la fonction \code{hardhat::mold()}.
 description:
   original: |
     Turn a Node object into predictor and outcome.
-  translation: transforme un objet \code{Node} en prédicteurs et résultats.
+  translation: Transforme un objet \code{Node} en prédicteurs et résultats.
 examples:
   original: |
     \dontshow{if ((require("data.tree") || require("dplyr"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

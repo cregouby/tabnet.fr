@@ -1,13 +1,13 @@
 title:
   original: Interpretation metrics from a TabNet model
-  translation: ~
+  translation: Métriques d'interprétation pour un modèle TabNet
 arguments:
   object:
     original: a TabNet fit object
-    translation: ~
+    translation: un objet de type TabNet fit
   new_data:
     original: a data.frame to obtain interpretation metrics.
-    translation: ~
+    translation: un data-frame sur lequel calculer les métriques d'interprétation.
 value:
   original: |
     Returns a list with
@@ -16,11 +16,19 @@ value:
     TabNet's paper.
     \item \code{masks} a list containing the masks for each step.
     }
-  translation: ~
+  translation: |
+    Renvoie une liste de 
+    \itemize{
+    \item \code{M_explain}: L'aggrégation des masques d'importance des variables comme
+    détaillé dans le papier de recherche de TabNet.
+    \item \code{masks} une liste contenant les masques associés à chaque step de l'architecture.
+    }
+
 description:
   original: |
     Interpretation metrics from a TabNet model
-  translation: ~
+  translation: |
+    Métriques d'interprétation pour un modèle TabNet
 examples:
   original: |
     \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

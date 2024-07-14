@@ -1,64 +1,71 @@
 title:
   original: TabNet Model Architecture
-  translation: ~
+  translation: Architecture du modèle TabNet
 arguments:
   input_dim:
     original: Initial number of features.
-    translation: ~
+    translation: Nombre initial de variables
   output_dim:
     original: |-
       Dimension of network output examples : one for regression, 2 for
       binary classification etc.. Vector of those dimensions in case of multi-output.
-    translation: ~
+    translation: |-
+      Dimension du tenseur de sortie. Exemple: 1 pour une regression, 2 pour une classification binaire, ...
+      Vecteur de chacune de ces dimensions dans le cas d'une sortie multi-valuée.
   n_d:
     original: Dimension of the prediction  layer (usually between 4 and 64).
-    translation: ~
+    translation: Dimension de la couche de prédiction (générallement de 4 à 64).
   n_a:
     original: Dimension of the attention  layer (usually between 4 and 64).
-    translation: ~
+    translation: Dimension de la couche d'attention (générallement de 4 à 64).
   n_steps:
     original: Number of successive steps in the network (usually between 3 and 10).
-    translation: ~
+    translation: Nombre de steps d'architecture successif dans le réseau (générallement de 3 à 10)
   gamma:
     original: Float above 1, scaling factor for attention updates (usually between
       1 and 2).
-    translation: ~
+    translation: Réel > 1. Facteur d'échelle pour les mises-à-jour de l'attention.
+       (générallement entre 1 et 2)
   cat_idxs:
     original: Index of each categorical column in the dataset.
-    translation: ~
+    translation: Les index des prédicteurs categoriels dans le jeu de données.
   cat_dims:
     original: Number of categories in each categorical column.
-    translation: ~
+    translation: Le nombre de modalités de chaque prédicteur catégoriel.
   cat_emb_dim:
     original: |-
       Size of the embedding of categorical features if int, all categorical
       features will have same embedding size if list of int, every corresponding feature will have
       specific size.
-    translation: ~
+    translation: |-
+      Soit un entier: la dimension de l'embedding à utiliser pour toutes les variables catégorielles.
+      Soit une liste d'entiers: la dimension de l'embedding, variable catégorielle par variable ctégorielle.
   n_independent:
     original: Number of independent GLU layer in each GLU block of the encoder.
-    translation: ~
+    translation: Nombre de couches GLU independantes dans chaque bloc GLU de l'encodeur.
   n_shared:
     original: Number of independent GLU layer in each GLU block of the encoder.
-    translation: ~
+    translation: Nombre de couches GLU partagées dans chaque bloc GLU de l'encodeur.
   epsilon:
     original: Avoid log(0), this should be kept very low.
-    translation: ~
+    translation: Protection contre log(0), doit être très petit.
   virtual_batch_size:
     original: Batch size for Ghost Batch Normalization.
-    translation: ~
+    translation: Taille du batch spécifique au module de "Ghost Batch Normalisation" 
   momentum:
     original: Float value between 0 and 1 which will be used for momentum in all batch
       norm.
-    translation: ~
+    translation: Réel entre 0 et 1 utilisé comme momentum pour la nomalisation des batches.
   mask_type:
     original: 'Either "sparsemax" or "entmax" : this is the masking function to use.'
-    translation: ~
+    translation: La fonction de masquage à utiliser. À choisir entre "sparsemax" et "entmax".
 description:
   original: |
     This is a \code{nn_module} representing the TabNet architecture from
     \href{https://arxiv.org/abs/1908.07442}{Attentive Interpretable Tabular Deep Learning}.
-  translation: ~
+  translation: |
+    Le \code{nn_module} contenant le réseau TabNet décrit dans
+    \href{https://arxiv.org/abs/1908.07442}{Attentive Interpretable Tabular Deep Learning}
 untranslatable:
 - alias
 - name

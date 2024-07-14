@@ -1,32 +1,38 @@
 title:
   original: Plot tabnet_explain mask importance heatmap
-  translation: ~
+  translation: Visualise la carte de chaleur des masques d'importance.
 arguments:
   object:
     original: A \code{tabnet_explain} object as a result of \code{\link[=tabnet_explain]{tabnet_explain()}}.
-    translation: ~
+    translation: Un objet de type \code{tabnet_explain}, résultat de la fonction \code{\link[=tabnet_explain]{tabnet_explain()}}.
   type:
     original: |-
       a character value. Either \code{"mask_agg"} the default, for a single
       heatmap of aggregated mask importance per predictor along the dataset,
       or \code{"steps"} for one heatmap at each mask step.
-    translation: ~
+    translation: |-
+      chaîne de caractères parmi \code{"mask_agg"} (par defaut), pour une 
+      carte de chaleur aggrégée des masques d'importance par prédicteur,
+      ou bien \code{"steps"} pour une carte de chaleur par step d'architecture du réseau.
   quantile:
     original: |-
       numerical value between 0 and 1. Provides quantile clipping of the
       mask values
-    translation: ~
+    translation: |-
+      valeur numérique entre 0 et 1. Valeur du quantile à partir duquel écreter
+      les valeurs des masques d'importance.
   '...':
     original: not used.
-    translation: ~
+    translation:  non utilisé
 value:
   original: |
     A \code{ggplot} object.
-  translation: ~
+  translation: |
+    Un objet de type \code{ggplot}.
 description:
   original: |
     Plot tabnet_explain mask importance heatmap
-  translation: ~
+  translation: Visualise la carte de chaleur des masques d'importance.
 details:
   original: |
     Plot the tabnet_explain object mask importance per variable along the predicted dataset.
@@ -34,7 +40,12 @@ details:
     \code{type="steps"} provides a plot faceted along the \code{n_steps} mask present in the model.
     \code{quantile=.995} may be used for strong outlier clipping, in order to better highlight
     low values. \code{quantile=1}, the default, do not clip any values.
-  translation: ~
+  translation: |
+    Visualise les masques d'importance des variables sur le jeu de donnée en résultat de  per variable along the predicted dataset.
+    \code{type="mask_agg"} output a single heatmap of mask aggregated values,
+    \code{type="steps"} provides a plot faceted along the \code{n_steps} mask present in the model.
+    \code{quantile=.995} may be used for strong outlier clipping, in order to better highlight
+    low values. \code{quantile=1}, the default, do not clip any values.
 examples:
   original: |
     \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
@@ -56,7 +67,27 @@ examples:
     ames_explain <- tabnet_explain(ames_fit, x)
     autoplot(ames_explain, quantile = 0.99)
     \dontshow{\}) # examplesIf}
-  translation: ~
+  translation: |
+    \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+    library(ggplot2)
+    data("attrition", package = "modeldata")
+
+    ## Regression logistique sur `Attrition` du jeu de données `attrition`
+    attrition_fit <- tabnet_fit(Attrition ~. , data=attrition, epoch=11)
+    attrition_explain <- tabnet_explain(attrition_fit, attrition)
+    # Visualise la carte de chaleur des masques d'importance aggrégés
+    autoplot(attrition_explain)
+
+    ## Regression linéaire simultanée sur `Sale_Price` et `Pool_Area` du jeu de données `ames`
+    data("ames", package = "modeldata")
+    ids <- sample(nrow(ames), 256)
+    x <- ames[ids,-which(names(ames) %in% c("Sale_Price", "Pool_Area"))]
+    y <- ames[ids, c("Sale_Price", "Pool_Area")]
+    ames_fit <- tabnet_fit(x, y, epochs = 5, verbose=TRUE)
+    ames_explain <- tabnet_explain(ames_fit, x)
+    autoplot(ames_explain, quantile = 0.99)
+    \dontshow{\}) # examplesIf}
+
 untranslatable:
 - alias
 - name

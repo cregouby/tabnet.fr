@@ -6,24 +6,30 @@ arguments:
     original: |-
       A \code{tabnet_fit} or \code{tabnet_pretrain} object as a result of
       \code{\link[=tabnet_fit]{tabnet_fit()}} or \code{\link[=tabnet_pretrain]{tabnet_pretrain()}}.
-    translation: ~
+    translation: |-
+      Un objet de type  \code{tabnet_fit} ou \code{tabnet_pretrain} résultat de 
+      \code{\link[=tabnet_fit]{tabnet_fit()}} or \code{\link[=tabnet_pretrain]{tabnet_pretrain()}}.
   '...':
     original: not used.
-    translation: ~
+    translation: inutilisé
 value:
   original: |
     A \code{ggplot} object.
-  translation: ~
+  translation: Un objet \code{ggplot}.
 description:
   original: |
     Plot tabnet_fit model loss along epochs
-  translation: ~
+  translation: Visualise la fonction de coût d'un \code{tabnet_fit} au cours des époques.
 details:
   original: |
     Plot the training loss along epochs, and validation loss along epochs if any.
     A dot is added on epochs where model snapshot is available, helping
     the choice of \code{from_epoch} value for later model training resume.
-  translation: ~
+  translation: |
+    Visualise la fonction de coût à chaque époque sur le jeu d'entraînement, et de 
+    validation si il existe. Un point est ajouté sur les époques lorsqu'un cliché du
+    modèle existe, pour aider au choix de \code{from_epoch} à la prochaine reprise
+    de l'entrînement.
 examples:
   original: |
     \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
