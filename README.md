@@ -25,7 +25,6 @@ Voici comment obtenir l'aide de {tabnet} en français :
 Sys.setenv(LANGUAGE = "fr")
 
 # charge la librairie de traduction puis tabnet par sa traduction française
-library(rhelpi18n)
 library(tabnet.fr)
 
 # consulte l'aide normalement
