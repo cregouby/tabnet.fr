@@ -1,12 +1,18 @@
 Package: tabnet.fr
 Type: Translation-module
-Title: What the package does (short line)
+Title: Les modèles 'Tabnet' pour la Classification et la Régression
 Version: 1.0
 Date: 2024-05-26
-Author: Who wrote it
+Authors@R: c(
+    person("Christophe", "Regouby", , "christophe.regouby@free.fr", role = c("cre", "cph"))
+  )
 Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Description: La version française de l'implémentation des modèles 'TabNet' par Sercan O. Arik et al. (2019)
+    <doi:10.48550/arXiv.1908.07442> avec 'Coherent Hierarchical Multi-label
+    Classification Networks' par Giunchiglia et al.  <doi:10.48550/arXiv.2010.10151> et
+    qui founit une interface homogène pour l'entraînement et l'inférence. 
+    Il est aussi entièrement compatible avec l'écosystème 'tidymodels'.
+License: MIT + file LICENSE
 Language: fr-FR
 Translates: tabnet (== 0.6.0)
 LazyData: true
