@@ -1,113 +1,157 @@
 title:
   original: Parsnip compatible tabnet model
-  translation: ~
+  translation: Modèle Tabent compatible avec parsnip
 arguments:
   mode:
     original: |-
       A single character string for the type of model. Possible values
       for this model are "unknown", "regression", or "classification".
-    translation: ~
+    translation: |-
+      Une chaîne de caratères pour la famille de modèle. À choisir parmi 
+      "unknown", "regression" ou "classification".
   cat_emb_dim:
     original: |-
       Size of the embedding of categorical features. If int, all categorical
       features will have same embedding size, if list of int, every corresponding feature will have
       specific embedding size.
-    translation: ~
+    translation: |-
+      Dimension d'encodage pour les variables catégorielles. Si c'est un entier, il est utilisé 
+      pour toutes les variables catégorielles. Si c'est une liste d'entiers, chaque variable catégorielle
+      sera encodée à la dimension correspondante.
   decision_width:
     original: |-
       (int) Width of the decision prediction layer. Bigger values gives
       more capacity to the model with the risk of overfitting. Values typically
       range from 8 to 64.
-    translation: ~
+    translation: |-
+      (entier) largeur de la couche de prediction de la décision. Une valeur
+      élevée donne de la capacité au modèle et un risque de sur apprentissage.
+      Les valeurs usuelles sont entre 8 et 64.
   attention_width:
     original: |-
       (int) Width of the attention embedding for each mask. According to
       the paper n_d = n_a is usually a good choice. (default=8)
-    translation: ~
+    translation: |-
+      (entier) largeur de la tête d'attention des embedding pour chaque masque.
+      Le papier recommande n_d = n_a comme un choix raisonnable. (8 par défaut)
   num_steps:
     original: |-
       (int) Number of steps in the architecture
       (usually between 3 and 10)
-    translation: ~
+    translation: |-
+      (entier) Nombre d'étapes dans l'architecture du réseau. (usuellement
+      entre 3 et 10)
   mask_type:
     original: |-
       (character) Final layer of feature selector in the attentive_transformer
       block, either \code{"sparsemax"} or \code{"entmax"}.Defaults to \code{"sparsemax"}.
-    translation: ~
+    translation: |-
+      (chaîne) Couche terminale de sélection de variables dans le bloc 
+      attentive_transformer. Soit \code{"sparsemax"}, soit \code{"entmax"}. 
+      \code{"sparsemax"} par défaut.
   num_independent:
     original: |-
       Number of independent Gated Linear Units layers at each step of the encoder.
       Usual values range from 1 to 5.
-    translation: ~
+    translation: |-
+      Nombre de Gated-Linear Unit indépendantes de l'encodeur à chaque step de l'architecture.
   num_shared:
     original: |-
       Number of shared Gated Linear Units at each step of the encoder. Usual values
       at each step of the decoder. range from 1 to 5
-    translation: ~
+    translation: |-
+      Nombre de Gated-Linear Unit partagées de l'encodeur à chaque step de l'architecture.
+      Typiquement entre 1 à 5.
   num_independent_decoder:
     original: |-
       For pretraining, number of independent Gated Linear Units layers
       Usual values range from 1 to 5.
-    translation: ~
+    translation: |-
+      Nombre de Gated-Linear Unit indépendantes du décodeur à chaque step de l'architecture.
+      Typiquement entre 1 à 5. (Pré-entrainement seulement)
   num_shared_decoder:
     original: |-
       For pretraining, number of shared Gated Linear Units at each step of the
       decoder. Usual values range from 1 to 5.
-    translation: ~
+    translation: |-
+      Nombre de Gated-Linear Unit partagées du décodeur à chaque step de l'architecture.
+      Typiquement entre 1 à 5. (Pré-entraînement seulement)
   penalty:
     original: |-
       This is the extra sparsity loss coefficient as proposed
       in the original paper. The bigger this coefficient is, the sparser your model
       will be in terms of feature selection. Depending on the difficulty of your
       problem, reducing this value could help (default 1e-3).
-    translation: ~
+    translation: |-
+      Le coefficient de frugalité de la fonction de coût, tel que proposé dans le 
+      papier de recherche. Plus il est important, plus le modèle sera frugal en 
+      selection de covariable. Suivant la difficulté du problème, il est possible
+      de réduire la valeur (1e-3 par défaut)
   feature_reusage:
     original: |-
       (float) This is the coefficient for feature reusage in the masks.
       A value close to 1 will make mask selection least correlated between layers.
       Values range from 1.0 to 2.0.
-    translation: ~
+    translation: |-
+      (réel) Coéfficient de réutilisation des covariables dans le masque. Une 
+      valeur proche de 1 diminue la corrélation de la selection de masque entre
+      couches. Valuers entre 1 et 2
   momentum:
     original: |-
       Momentum for batch normalization, typically ranges from 0.01
       to 0.4 (default=0.02)
-    translation: ~
+    translation: |-
+      Momentum utilisé pour la normalisation du batch. Typiquement entre 0.01 et 0.4.
+      0.02 par défaut.
   epochs:
     original: (int) Number of training epochs.
-    translation: ~
+    translation: (entier) Nonbre d'époques d'entraînement
   batch_size:
     original: |-
       (int) Number of examples per batch, large batch sizes are
       recommended. (default: 1024^2)
-    translation: ~
+    translation: |-
+      (entier) Nombre d'exemples par batch, le batch doit être de 
+      de grande taille (1024^2 par defaut)
   virtual_batch_size:
     original: |-
       (int) Size of the mini batches used for
       "Ghost Batch Normalization" (default=256^2)
-    translation: ~
+    translation: |-
+      (entier) Taille du mini-batch utilisé pour le module "Ghost Batch Normalisation".
+      256^2 par défaut.
   learn_rate:
     original: initial learning rate for the optimizer.
-    translation: ~
+    translation: valeur du taux d'apprentissage initial pour l'optimiseur.
   optimizer:
     original: |-
       the optimization method. currently only 'adam' is supported,
       you can also pass any torch optimizer function.
-    translation: ~
+    translation: |-
+      Methode d'optimisation. \code{"adam"} est le seul optimizeur supporté, mais peut
+      être remplacé par une fonction d'optimisation torch.
   loss:
     original: |-
       (character or function) Loss function for training (default to mse
       for regression and cross entropy for classification)
-    translation: ~
+    translation: |-
+      (chaîne ou fonction) La fonction de coût pour la phase d'entraînement.
+      mse par défaut pour la régression, cross-entropy par defaut pour la 
+      classification.
   clip_value:
     original: |-
       If a float is given this will clip the gradient at
       clip_value. Pass \code{NULL} to not clip.
-    translation: ~
+    translation: |-
+      Valeur d'écrêtage du gradient si réel, pas d'écrêtage lorsque la valeur est 
+      \code{NULL}
   drop_last:
     original: |-
       (logical) Whether to drop last batch if not complete during
       training
-    translation: ~
+    translation: |-
+      (logique) Suppression du dernier batch s'il est incomplêt lors de la phase
+      d'entraînement
   lr_scheduler:
     original: |-
       if \code{NULL}, no learning rate decay is used. If "step"
@@ -115,35 +159,51 @@ arguments:
       decays the learning rate by \code{lr_decay} when no improvement after \code{step_size} epochs.
       It can also be a \link[torch:lr_scheduler]{torch::lr_scheduler} function that only takes the optimizer
       as parameter. The \code{step} method is called once per epoch.
-    translation: ~
+    translation: |-
+      Le taux d'apprentissage est constant lorque \code{NULL}. Lorsque la valeur est "step",
+      décremente le taux d'apprentissage par \code{lr_decay} toute les \code{step_size} époques. 
+      Le même résultat peut être obtenu avec une fonction \link[torch:lr_scheduler]{torch::lr_scheduler} qui prend
+      l'optimiseur comme seul paramêtre. La méthode \code{step} n'est appellée qu'une fois par époque.
   lr_decay:
     original: |-
       multiplies the initial learning rate by \code{lr_decay} every
       \code{step_size} epochs. Unused if \code{lr_scheduler} is a \code{torch::lr_scheduler}
       or \code{NULL}.
-    translation: ~
+    translation: |-
+      multiplie le taux d'apprentissage initial par \code{lr_decay} à chaque \code{step_size}
+      époque. Inopérant lorque \code{lr_scheduler} est un \code{torch::lr_scheduler}
+      ou est \code{NULL}.
   step_size:
     original: |-
       the learning rate scheduler step size. Unused if
       \code{lr_scheduler} is a \code{torch::lr_scheduler} or \code{NULL}.
-    translation: ~
+    translation: |-
+      nombre de pas de calculs pour décrementer le taux d'apprentissage. Inopérant lorque 
+      \code{lr_scheduler} est un \code{torch::lr_scheduler} ou est \code{NULL}.
   checkpoint_epochs:
     original: |-
       checkpoint model weights and architecture every
       \code{checkpoint_epochs}. (default is 10). This may cause large memory usage.
       Use \code{0} to disable checkpoints.
-    translation: ~
+    translation: |-
+      crée un cliché des poids et de l'architecture du modèle tous les \code{checkpoint_epochs}
+      époques. la valeur 0 desactive l'enregistrement de clichés.
   verbose:
     original: |-
       (logical) Whether to print progress and loss values during
       training.
-    translation: ~
+    translation: |-
+      (logique) Doit-on afficher la progression et les valeurs de la fonction de coût
+      pendant l'apprentissage.
   importance_sample_size:
     original: |-
       sample of the dataset to compute importance metrics.
       If the dataset is larger than 1e5 obs we will use a sample of size 1e5 and
       display a warning.
-    translation: ~
+    translation: |-
+      taille du jeu de donnée pour le calcul de l'importance des variables. Si le jeu de données
+      est plus grand que 1e5 observations, il sera échantillonné à 1e5 observations avec un
+      message de Warning.
   early_stopping_monitor:
     original: Metric to monitor for early_stopping. One of "valid_loss", "train_loss"
       or "auto" (defaults to "auto").
@@ -152,32 +212,43 @@ arguments:
     original: |-
       Minimum relative improvement to reset the patience counter.
       0.01 for 1\% tolerance (default 0)
-    translation: ~
+    translation: |-
+      Minimum relative improvement to reset the patience counter.
+      0.01 for 1\% tolerance (default 0)
   early_stopping_patience:
     original: Number of epochs without improving until stopping training. (default=5)
-    translation: ~
+    translation: |-
+      Nombre d'époques sans amélioration avant d'arrêter l'entraînement. (5 par défaut)
   skip_importance:
     original: 'if feature importance calculation should be skipped (default: \code{FALSE})'
-    translation: ~
+    translation: |-
+      bypass du calcul de l'importance des variables
   tabnet_model:
     original: |-
       A previously fitted TabNet model object to continue the fitting on.
       if \code{NULL} (the default) a brand new model is initialized.
-    translation: ~
+    translation: |-
+      Un object de type \code{tabnet_model} pré-entraîné sur lequel continuer l'entraînement.
+      Si \code{NULL} (par default) un nouveau modèle sera initialisé.
   from_epoch:
     original: |-
       When a \code{tabnet_model} is provided, restore the network weights from a specific epoch.
       Default is last available checkpoint for restored model, or last epoch for in-memory model.
-    translation: ~
+    translation: |-
+      Losqu'un \code{tabnet_model} est fourni, les poids du réseau sont restaurés à partir du cliché
+      du modèle à l'époque specifiée. Par défaut, le dernier cliché du modèle est utilisé pour un
+      modèle restauré du disque, ou la dernière époque disponible pour un modèle en mémoire.
 value:
   original: |
     A TabNet \code{parsnip} instance. It can be used to fit tabnet models using
     \code{parsnip} machinery.
-  translation: ~
+  translation: |
+    Une instance de TabNet \code{parsnip}. Peut être utilisé pour entrîner des modèles
+    avec la machinerie \code{parsnip}.
 description:
   original: |
     Parsnip compatible tabnet model
-  translation: ~
+  translation: Modèle Tabent compatible avec parsnip
 section{Threading}:
   original: |
     TabNet uses \code{torch} as its backend for computation and \code{torch} uses all
@@ -188,7 +259,15 @@ section{Threading}:
     \if{html}{\out{<div class="sourceCode">}}\preformatted{torch::torch_set_num_threads(1)
     torch::torch_set_num_interop_threads(1)
     }\if{html}{\out{</div>}}
-  translation: ~
+  translation: |
+    TabNet repose sur \code{torch} pour son moteur de calcul et \code{torch} 
+    utilise toutes les threads par défaut.
+
+    Vous pouver contrôler les treads que \code{torch} utilise avec:
+
+    \if{html}{\out{<div class="sourceCode">}}\preformatted{torch::torch_set_num_threads(1)
+    torch::torch_set_num_interop_threads(1)
+    }\if{html}{\out{</div>}}
 examples:
   original: |
     \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

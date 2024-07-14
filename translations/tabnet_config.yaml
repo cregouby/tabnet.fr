@@ -7,7 +7,7 @@ arguments:
       (int) Number of examples per batch, large batch sizes are
       recommended. (default: 1024^2)
     translation: |-
-      (entier) Nombre d'exemple par batch, le batch doit être de 
+      (entier) Nombre d'exemples par batch, le batch doit être de 
       de grande taille (1024^2 par defaut)
   penalty:
     original: |-
@@ -34,7 +34,7 @@ arguments:
     translation: |-
       (chaîne ou fonction) La fonction de coût pour la phase d'entraînement.
       mse par défaut pour la régression, cross-entropy par defaut pour la 
-      classification
+      classification.
   epochs:
     original: (int) Number of training epochs.
     translation: (entier) Nonbre d'époques d'entraînement
@@ -76,7 +76,7 @@ arguments:
     translation: |-
       (réel) Coéfficient de réutilisation des covariables dans le masque. Une 
       valeur proche de 1 diminue la corrélation de la selection de masque entre
-      couches. Valuers entre 1.0 et 2.0
+      couches. Valuers entre 1 et 2
   mask_type:
     original: |-
       (character) Final layer of feature selector in the attentive_transformer
@@ -91,7 +91,7 @@ arguments:
       "Ghost Batch Normalization" (default=256^2)
     translation: |-
       (entier) Taille du mini-batch utilisé pour le module "Ghost Batch Normalisation".
-      256^2 par défaut
+      256^2 par défaut.
   valid_split:
     original: |-
       (\verb{[0, 1)}) The fraction of the dataset used for validation.
@@ -106,7 +106,7 @@ arguments:
       the optimization method. currently only 'adam' is supported,
       you can also pass any torch optimizer function.
     translation: |-
-      Methode d'optimisation. 'adam' est le seul optimizeur supporté, mais peut
+      Methode d'optimisation. \code{"adam"} est le seul optimizeur supporté, mais peut
       être remplacé par une fonction d'optimisation torch.
   lr_scheduler:
     original: |-
@@ -142,8 +142,8 @@ arguments:
       \code{checkpoint_epochs}. (default is 10). This may cause large memory usage.
       Use \code{0} to disable checkpoints.
     translation: |-
-      crée un checkpoint des poids et de l'architecture du modèle tous les \code{checkpoint_epochs}
-      époques. la valeur 0 desactive l'enregistrement de checkpoints.
+      crée un cliché des poids et de l'architecture du modèle tous les \code{checkpoint_epochs}
+      époques. la valeur 0 desactive l'enregistrement de clichés.
   cat_emb_dim:
     original: |-
       Size of the embedding of categorical features. If int, all categorical
@@ -185,7 +185,8 @@ arguments:
       Momentum for batch normalization, typically ranges from 0.01
       to 0.4 (default=0.02)
     translation: |-
-      Momentum utilisé pour la normalisation du batch. Typiquement entre 0.01 et 0.4. 0.02 par défaut.
+      Momentum utilisé pour la normalisation du batch. Typiquement entre 0.01 et 0.4.
+      0.02 par défaut.
   pretraining_ratio:
     original: |-
       Ratio of features to mask for reconstruction during
@@ -199,7 +200,7 @@ arguments:
       training.
     translation: |-
       (logique) Doit-on afficher la progression et les valeurs de la fonction de coût
-      pendant l'apprentissage
+      pendant l'apprentissage.
   device:
     original: |-
       the device to use for training. "cpu" or "cuda". The default ("auto")
