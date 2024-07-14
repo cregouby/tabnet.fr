@@ -15,13 +15,26 @@ arguments:
       The predictor data should be standardized (e.g. centered or scaled).
       The model treats categorical predictors internally thus, you don't need to
       make any treatment.
-    translation: ~
+    translation: |-
+      Suivant le contexte:
+      \itemize{
+      \item Un \strong{data.frame} des prédicterus.
+      \item Une \strong{matrice} des prédicteurs.
+      \item Une \strong{recète} contenant la specification des étapes de préprocessing
+      crée avec \code{\link[recipes:recipe]{recipes::recipe()}}.
+      }
+
+      Les données des prédicteurs doivent être normalisées (centrées ou réduites).
+      Le modèle gère les variables catégorielles, donc aucun prétraitemenent n'est nécessaire.
   '...':
     original: |-
       Model hyperparameters.
       Any hyperparameters set here will update those set by the config argument.
       See \code{\link[=tabnet_config]{tabnet_config()}} for a list of all possible hyperparameters.
-    translation: ~
+    translation: |-
+      Les hyper-paramêtres du modèle.
+      Lorsqu'il est fixé ici, un hyper-paramêtre écrase la valeur venant de l'argument de configuration.
+      \code{\link[=tabnet_config]{tabnet_config()}} donne la liste de tous les hyper-paramêtres possibles.
   'y':
     original: |-
       When \code{x} is a \strong{data frame} or \strong{matrix}, \code{y} is the outcome
@@ -31,45 +44,69 @@ arguments:
       \item A \strong{matrix} with 1 column.
       \item A \strong{vector}, either numeric or categorical.
       }
-    translation: ~
+    translation: |-
+      Si \code{x} est un \strong{data frame} ou une \strong{matrice},
+      alors \code{y} est la ou les variables à prédire sous forme de:
+      \itemize{
+      \item Un \strong{data.frame} avec une ou des colonnes numériques (regression) ou alors
+        une ou des colonnes catégorielles (classification).
+      \item Une \strong{matrice} à une colonne.
+      \item Un \strong{vecteur} soit numérique soit catégoriel.
+      }
   tabnet_model:
     original: |-
       A previously fitted TabNet model object to continue the fitting on.
       if \code{NULL} (the default) a brand new model is initialized.
-    translation: ~
+    translation: |-
+      Un object de type \code{tabnet_model} pré-entraîné sur lequel continuer l'entraînement.
+      Si \code{NULL} (par default) un nouveau modèle sera initialisé.
   config:
     original: |-
       A set of hyperparameters created using the \code{tabnet_config} function.
       If no argument is supplied, this will use the default values in \code{\link[=tabnet_config]{tabnet_config()}}.
-    translation: ~
+    translation: |-
+      Une liste des hyper-paramêtres du modèle crée avec la fonction \code{tabnet_config}.
+      Si vide, alors le modèle utilise les valeurs par défaut de \code{\link[=tabnet_config]{tabnet_config()}}.
   from_epoch:
     original: |-
       When a \code{tabnet_model} is provided, restore the network weights from a specific epoch.
       Default is last available checkpoint for restored model, or last epoch for in-memory model.
-    translation: ~
+    translation: |-
+      Losqu'un \code{tabnet_model} est fourni, les poids du réseau sont restaurés à partir du cliché
+      du modèle à l'époque specifiée. Par défaut, le dernier cliché du modèle est utilisé pour un
+      modèle restauré du disque, ou la dernière époque disponible pour un modèle en mémoire.
   weights:
     original: Unused.
-    translation: ~
+    translation: Inutilisé
   formula:
     original: |-
       A formula specifying the outcome terms on the left-hand side,
       and the predictor terms on the right-hand side.
-    translation: ~
+    translation: |-
+      Une formule qui spécifie la variable à prédire (partie gauche) et les prédicteurs
+      (partie droite).
   data:
     original: |-
       When a \strong{recipe} or \strong{formula} is used, \code{data} is specified as:
       \itemize{
       \item A \strong{data frame} containing both the predictors and the outcome.
       }
-    translation: ~
+    translation: |-
+      Dans le cas \strong{recipe} ou \strong{formula}, \code{data} doit contenir:
+      \itemize{
+      \item Un \strong{data frame} contenant les prédicteurs et les variables à prédire.
+      }
 value:
   original: |
     A TabNet model object. It can be used for serialization, predictions, or further fitting.
-  translation: ~
+  translation: |
+    Un objet de type Tabnet model. À utiliser ensuite pour de la sérialisation, des predictions,
+    ou pour continuer l'entraînement.
 description:
   original: |
     Fits the \href{https://arxiv.org/abs/1908.07442}{TabNet: Attentive Interpretable Tabular Learning} model
-  translation: ~
+  translation: |
+    Entraîne un modèle \href{https://arxiv.org/abs/1908.07442}{TabNet: Attentive Interpretable Tabular Learning}.
 section{Fitting a pre-trained model}:
   original: |
     When providing a parent \code{tabnet_model} parameter, the model fitting resumes from that model weights
@@ -80,13 +117,24 @@ section{Fitting a pre-trained model}:
     \item the epoch related to a checkpoint matching or preceding the \code{from_epoch} value if provided
     The model fitting metrics append on top of the parent metrics in the returned TabNet model.
     }
-  translation: ~
+  translation: |
+    Lorsqu'un modèle parent est fourni en paramêtre \code{tabnet_model}, l'entraînement du modèle reprend 
+    à partir des poids du modèle à l'époque comme suit:
+    \itemize{
+    \item la dernière époque disponible pour un modèle dans le contexte mémoire de torch
+    \item le dernier cliché du modèle pour un modèle depuis un fichier
+    \item l'époque idiquée ou précédant la valeur de \code{from_epoch}, si indiquée.
+    Les métriques d'entraînement s'ajoute à la liste existante du modèle parent dans le modèle TabNet produit.
+    }
 section{Multi-outcome}:
   original: |
     TabNet allows multi-outcome prediction, which is usually named \href{https://en.wikipedia.org/wiki/Multi-label_classification}{multi-label classification}
     or multi-output classification when outcomes are categorical.
     Multi-outcome currently expect outcomes to be either all numeric or all categorical.
-  translation: ~
+  translation: |
+    TabNet supporte des prédiction sur des variables multiples en sortie, communément appellée \href{https://en.wikipedia.org/wiki/Multi-label_classification}{multi-label classification}
+    ou classification multi-sortie.
+    La classification multi-sortie exige que les variables à prédire soient toutes numerique ou toutes catégorielles.
 section{Threading}:
   original: |
     TabNet uses \code{torch} as its backend for computation and \code{torch} uses all
@@ -97,7 +145,15 @@ section{Threading}:
     \if{html}{\out{<div class="sourceCode">}}\preformatted{torch::torch_set_num_threads(1)
     torch::torch_set_num_interop_threads(1)
     }\if{html}{\out{</div>}}
-  translation: ~
+  translation: |
+    TabNet repose sur \code{torch} pour son moteur de calcul et \code{torch} 
+    utilise toutes les threads par défaut.
+
+    Vous pouver contrôler les treads que \code{torch} utilise avec:
+
+    \if{html}{\out{<div class="sourceCode">}}\preformatted{torch::torch_set_num_threads(1)
+    torch::torch_set_num_interop_threads(1)
+    }\if{html}{\out{</div>}}
 examples:
   original: |
     \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
@@ -132,7 +188,41 @@ examples:
     # Note: Dataset number of rows and model number of epochs should be increased
     # for publication-level results.
     \dontshow{\}) # examplesIf}
-  translation: ~
+  translation: |
+    \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
+    data("ames", package = "modeldata")
+    data("attrition", package = "modeldata")
+    ids <- sample(nrow(attrition), 256)
+
+    ## Regression sur une seule variable de sortie avec spécification par formule 
+    fit <- tabnet_fit(Sale_Price ~ ., data = ames, epochs = 1)
+
+    ## Classification sur une seule varable de sortie avec specification par data-frame
+    attrition_x <- attrition[,-which(names(attrition) == "Attrition")]
+    fit <- tabnet_fit(attrition_x, attrition$Attrition, epochs = 1, verbose = TRUE)
+
+    ## Regression multi-sortie sur les variables `Sale_Price` et `Pool_Area` du jeu de données
+    ## `ames`  avec spécification par formule
+    ames_fit <- tabnet_fit(Sale_Price + Pool_Area ~ ., data = ames[ids,], epochs = 2, valid_split = 0.2)
+
+    ## Classification multi-étiquette sur  `Attrition` et `JobSatisfaction` du jeu de données
+    ## `attrition` en utilisant une spécification par recette
+    library(recipes)
+    rec <- recipe(Attrition + JobSatisfaction ~ ., data = attrition[ids,]) %>%
+      step_normalize(all_numeric(), -all_outcomes())
+
+    attrition_fit <- tabnet_fit(rec, data = attrition[ids,], epochs = 2, valid_split = 0.2)
+
+    ## Classifiaction hyérarchique sur le jeu de données `acme`
+    data(acme, package = "data.tree")
+
+    acme_fit <- tabnet_fit(acme, epochs = 2, verbose = TRUE)
+
+    # Note: Dans ces exemples, la taille du jeu de données et le nombre d'époques 
+    # d'entraînement doivent être augmentés pour des résultats publiables.
+    \dontshow{\}) # examplesIf}
+
 untranslatable:
 - alias
 - name

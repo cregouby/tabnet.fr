@@ -45,7 +45,7 @@ arguments:
       A pretrained TabNet model object to continue the fitting on.
       if \code{NULL} (the default) a brand new model is initialized.
     translation: |-
-      Un object de type Tabnet pré-entraîné sur lequel continuer l'entraînement.
+      Un object de type \code{tabnet_model} pré-entraîné sur lequel continuer l'entraînement.
       Si \code{NULL} (par default) un nouveau modèle sera initialisé.
   config:
     original: |-
@@ -54,7 +54,6 @@ arguments:
     translation: |-
       Une liste des hyper-paramêtres du modèle crée avec la fonction \code{tabnet_config}.
       Si vide, alors le modèle utilise les valeurs par défaut de \code{\link[=tabnet_config]{tabnet_config()}}.
-
   from_epoch:
     original: |-
       When a \code{tabnet_model} is provided, restore the network weights from a specific epoch.
