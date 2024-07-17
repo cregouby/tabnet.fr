@@ -32,7 +32,8 @@ value:
 description:
   original: |
     Plot tabnet_explain mask importance heatmap
-  translation: Visualise la carte de chaleur des masques d'importance.
+  translation: |
+    Visualise la carte de chaleur des masques d'importance.
 details:
   original: |
     Plot the tabnet_explain object mask importance per variable along the predicted dataset.
@@ -41,11 +42,11 @@ details:
     \code{quantile=.995} may be used for strong outlier clipping, in order to better highlight
     low values. \code{quantile=1}, the default, do not clip any values.
   translation: |
-    Visualise les masques d'importance des variables sur le jeu de donnée en résultat de  per variable along the predicted dataset.
-    \code{type="mask_agg"} output a single heatmap of mask aggregated values,
-    \code{type="steps"} provides a plot faceted along the \code{n_steps} mask present in the model.
-    \code{quantile=.995} may be used for strong outlier clipping, in order to better highlight
-    low values. \code{quantile=1}, the default, do not clip any values.
+    Visualise les masques d'importance des variables sur le jeu de donnée en résultat de prediction.
+    \code{type="mask_agg"} produit la carte de chaleur des masques agrégés,
+    \code{type="steps"} produit la carte de chaleur des masques pour chaque step, .
+    \code{quantile=.995} permet l'écrêtage des valeurs extrêmes du masque, pour une mise en valeur des faibles valeurs. 
+    \code{quantile=1}, par défaut, pas d'écrêtage.
 examples:
   original: |
     \dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
