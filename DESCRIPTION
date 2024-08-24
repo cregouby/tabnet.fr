@@ -4,7 +4,7 @@ Title: Entraîne des modèles 'Tabnet' pour la Classification et la Régression
 Version: 0.6.0
 Date: 2024-05-26
 Authors@R: c(
-    person("Christophe", "Regouby", , "christophe.regouby@free.fr", role = c("cre", "cph"))
+    person("Christophe", "Regouby", , "christophe.regouby@free.fr", role = c("aut", "cre", "cph"))
   )
 Description: La version française de l'implémentation des modèles 'TabNet' par Sercan O. Arik et al. (2019)
     <doi:10.48550/arXiv.1908.07442> avec 'Coherent Hierarchical Multi-label
@@ -16,7 +16,9 @@ BugReports: https://github.com/cregouby/tabnet.fr/issues
 Language: fr_FR
 Translates: tabnet (== 0.6.0)
 LazyData: true
-imports:
+Imports:
     rhelpi18n
+Remotes:  
+    eliocamp/rhelpi18n
 RoxygenNote: 7.3.2
 Encoding: UTF-8
