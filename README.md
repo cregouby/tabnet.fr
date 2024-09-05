@@ -24,8 +24,9 @@ Voici comment utiliser {tabnet} avec l'aide en français :
 # configure la session en langue française
 Sys.setenv(LANGUAGE = "fr")
 
-# charge la librairie tabnet en traduction française
+# charge la librairie d'aide de tabnet en traduction française, et {tabnet}
 library(tabnet.fr)
+library(tabnet)
 
 # consulte l'aide normalement
 ??autoplot.tabnet_explain
