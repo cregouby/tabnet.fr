@@ -11,9 +11,8 @@ Le paquet d'internationalisation de **{tabnet}** en français (fr_FR)
 Vous pouvez installer la version de development de **{tabnet.fr}** depuis [GitHub](https://github.com/) via:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("eliocamp/rhelpi18n")
-devtools::install_github("cregouby/tabnet.fr")
+# install.packages("pak")
+pak::pak("cregouby/tabnet.fr")
 ```
 
 ## Exemple
@@ -29,7 +28,7 @@ library(tabnet.fr)
 library(tabnet)
 
 # consulte l'aide normalement
-??autoplot.tabnet_explain
+?autoplot.tabnet_explain
 ```
 
 ![exemple de page de documentation en français dans l'onglet Help de RStudio](images/clipboard-3497452233.png)
