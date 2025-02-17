@@ -1,0 +1,110 @@
+---
+title: "Entraînement d'un modèle tabnet avec tidymodels"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Entraînement d'un modèle tabnet avec tidymodels}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+```{r setup}
+library(tabnet)
+library(tidymodels)
+library(modeldata)
+```
+
+Dans cette vignette, vous allez découvrir comment créer un modèle TabNet en utilisant l'interface tidymodels.
+
+Nous allons utiliser le dataset `lending_club` disponible dans le package `modeldata`.
+
+Commençons par faire la segmentation de notre dataset entre train et test pour pouvoir évaluer la performance de notre modèle à la fin :
+
+```{r}
+set.seed(123)
+data("lending_club", package = "modeldata")
+split <- initial_split(lending_club, strata = Class)
+train <- training(split)
+test  <- testing(split)
+```
+
+Nous définissons maintenant nos étapes de pré-processing. Notez que TabNet gère les variables catégorielles, nous n'avons donc pas besoin de les encoder. La normalisation des variables numériques est une bonne 
+pratique toutefois, qu'on appliquera ici.
+
+```{r}
+rec <- recipe(Class ~ ., train) %>%
+  step_normalize(all_numeric())
+```
+
+Nous définissons ensuite notre modèle. Nous allons entraîner pendant 50 époques avec une taille de lot de 128. Pour les autres hyperparamètres, nous utilisons les valeurs par défaut.
+
+```{r}
+mod <- tabnet(epochs = 50, batch_size = 128) %>%
+  set_engine("torch", verbose = TRUE) %>%
+  set_mode("classification")
+```
+
+Avec un modèle et une recête, nous povons définir un objet `workflow` :
+
+```{r}
+wf <- workflow() %>%
+  add_model(mod) %>%
+  add_recipe(rec)
+```
+
+On définit une stratégie de validation croisée : 
+
+```{r}
+folds <- vfold_cv(train, v = 5)
+```
+
+Et on peut maintenant entraîner le modèle avec cette stratégie : 
+
+```{r}
+fit_rs <- wf %>%
+  fit_resamples(folds)
+```
+
+Après quelques minutes on obtient les résultats :
+
+```{r}
+collect_metrics(fit_rs)
+```
+
+```
+# A tibble: 2 x 5
+  .metric  .estimator  mean     n  std_err
+  <chr>    <chr>      <dbl> <int>    <dbl>
+1 accuracy binary     0.946     5 0.000713
+2 roc_auc  binary     0.732     5 0.00539 
+```
+
+Et on peut finalement vérifier les résultats sur notre jeu de test :
+
+```{r}
+model <- wf %>% fit(train)
+test %>% 
+  bind_cols(
+    predict(model, test, type = "prob")
+  ) %>% 
+  roc_auc(Class, .pred_bad)
+```
+
+```
+# A tibble: 1 x 3
+  .metric .estimator .estimate
+  <chr>   <chr>          <dbl>
+1 roc_auc binary         0.710
+```
+
+
+
+
+

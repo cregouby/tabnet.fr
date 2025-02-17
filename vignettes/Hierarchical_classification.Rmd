@@ -1,0 +1,209 @@
+---
+title: "Hierarchical Classification"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Hierarchical Classification}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+```{r setup}
+library(tabnet)
+library(dplyr)
+library(data.tree)
+library(ggplot2)
+library(rsample)
+library(tibble)
+set.seed(202307)
+```
+
+## Préparation des données
+
+Le format de donnée attendu pour la classification hiérarchique est le format d'objet `Node` provenant du package `{data.tree}`.
+
+C'est un format généraliste qui répond aux besoins d'encodage hiérarchique nécessaires. Chaque nœud de l'arbre est associé à des valeurs de prédicteurs grâce aux attributs dans l'objet de données `Node`.
+
+- Un exemple très basique est le jeu de données `acme` pour vous montrer comment les deux prédicteur `cost` et `p` sont associées comme attributs de chaque nœud dans la hiérarchie : 
+
+```{r}
+data(acme, package = "data.tree")
+acme$attributesAll
+print(acme, "cost", "p" , limit = 8)
+```
+
+- Plusieurs méthodes manuelles ou programmatiques sont disponibles pour créer ou mettre à jour des prédicteurs. Elles sont détaillées dans la vignette `"data.tree"` du package `{data.tree}`.
+
+- Un certain nombre de conversions de données hiérarchiques à partir de fichiers natifs vers `Node` sont couvertes par le package `{data.tree}`. Vous pouvez les trouver dans la section "Créer un arbre à partir d'un fichier" de la même
+vignette. Si nécessaire, le package `{ape}` couvre une grande variété de formats de conversion vers le format `philo`. Ainsi vous pouvez atteindre le format `Node` en deux étapes...
+
+- Une façon rapide pour obtenir le format `Node` à partir d'un dataframe représentant les différents niveaux de la hiérarchie consiste à coller les colonnes dans une chaîne unique avec un séparateur `"/"` dans une colonne `pathString`. 
+Le résultat sera transformé en arbre au format attendu par la commande `as.Node()`.
+
+Appliquons naïvement ces étapes sur le jeu de données `starwars` : 
+
+```{r}
+data(starwars, package = "dplyr")
+head(starwars, 4)
+
+# construction erronnée du Node
+starwars_tree <- starwars %>% 
+  mutate(pathString = paste("StarWars_characters", species, sex, `name`, sep = "/")) %>%
+  as.Node()
+print(starwars_tree, "name","height", "mass", "eye_color", limit = 8)
+
+```
+
+Vous remarquez que les valeurs de `name` et `height` ne viennent pas des données d'origine : `Human` n'est pas une valeur pour `height` du jeu de données d'origine, et les valeurs de `height` ont été modifiées en les valeurs de hauteur locale de l'arbre. Cela est dû à certaines règles que nous devons suivre pour créer le Node à partir d'un jeu de données.
+
+## Règles de préparation des nodules pour les modèles {tabnet}
+
+### Éviter les prédicteurs au format `factor()` 
+
+Comme `as.Node()` ne considérera que les valeurs numériques (`as.numeric()`) d'une variable factor, il faut convertir les facteurs en chaînes avant d'appliquer la fonction `as.Node()` afin que {tabnet} puisse les intégrer correctement. 
+
+### Éviter les collisions de noms entre colonnes et les noms réservés {data.tree}
+
+`name` et `height` sont tous deux des noms de colonne réservés dans la liste `NODE_RESERVED_NAMES_CONST` des noms réservés pour les attributs du Node. Ainsi ils ne doivent **pas être utilisés** en tant que noms de prédicteur, ou la 
+fonction `as.Node()` les supprimera discrètement.
+
+### Éviter les colonnes nommées `level_*` pour éviter les collisions avec les noms des données d'arbre
+
+La hiérarchie du votre arbre sera transformée en valeurs de sortie interne nommées `level_1` à `level_n`, n étant la profondeur de votre arbre. C'est pour cela que les colonnes dont les noms commencent par `level_` devraient être évitées.
+
+### Assurez-vous que le dernier niveau de l'arbre est un identifiant d'observation unique
+
+L'arbre ne garde qu'une seule ligne d'attributs par feuille. Ainsi afin de transférer 
+votre jeu de données complet dans l'objet Node, il faut garder le dernier niveau de 
+la hiérarchie comme identifiant d'observation unique (la fonction de
+dernièr recours étant `rowid_to_column()` pour y arriver).
+
+La classification sera effectuée **en supprimant le dernier niveau de l'hérarchie** dans tous les cas.
+
+### Assurez-vous qu'il existe un nœud racine dans l'hérarchie
+
+L'arbre doit avoir un seul nœud racine pour toutes les feuilles pour être consistant. 
+Vous devez donc avoir un prefixe constant à toutes les `pathString`.
+
+La classification sera faire en **supprimant ce premier niveau de hyerarchie** dans tous les cas.
+The tree should have a single root for all nodes to be consistent. Thus you have to use a constant prefix to all `pathString`.
+
+Appliquons maintenant chacune de ces rêgles à notre exemple `starwars_tree` : 
+
+```{r}
+# démonstration de la modification des noms de colonne réservés pour la creation de l'objet Node
+starwars_tree <- starwars %>% 
+  rename(`_name` = "name", `_height` = "height") %>% 
+  mutate(pathString = paste("StarWars_characters", species, sex, `_name`, sep = "/")) %>%
+  as.Node()
+print(starwars_tree, "name", "_name","_height", "mass", "eye_color", limit = 8)
+```
+ We can see that the reserved `name` column contains slightly different content that the original `_name` column.
+ 
+## Modélisation
+
+### Séparation des jeux de données
+
+Le dataset `starwars` contient des colonnes listes, qui reçoivent une variabilité de valeurs de predicteurs. Nous décidons donc ici d'`unnest_longer` chacune de ces colonne en chacune de ses valeurs. Cela doublera la taille du 
+jeu de données `starwars`. La séparation des jeux de données sera effectuée en amont de la transformation en `as.Node()`.
+
+Nous utiliserons `rsample::initial_split()` pour faire la séparation avec une stratification sur la catégorie parente du niveau 1 de notre hiérarchie, soit `species`.
+
+```{r}
+starw_split <- starwars %>% 
+  tidyr::unnest_longer(films) %>% 
+  tidyr::unnest_longer(vehicles, keep_empty = TRUE) %>% 
+  tidyr::unnest_longer(starships, keep_empty = TRUE) %>% 
+  initial_split( prop = .8, strata = "species")
+```
+
+
+Pour entraîner un modèle correctement, il faut empêcher les fuites de données de la variable cible parmi les predicteurs. 
+Pour la démonstration, la colonne `_name` était présente dans `starwars_tree`, mais doit maintenant 
+être supprimée.
+
+```{r}
+# Construction correcte du nœud pour le modélisation hiérarchique
+starwars_train_tree <- starw_split %>% 
+  training() %>% 
+  # éviter les noms de colonnes réservés
+  rename(`_name` = "name", `_height` = "height") %>% 
+  rowid_to_column() %>% 
+  mutate(pathString = paste("StarWars_characters", species, sex, rowid, sep = "/")) %>%
+  # supprimer les étiquettes de résultats des prédicteurs
+  select(-species, -sex, -`_name`, -rowid) %>% 
+  # transformer en nœud hiérarchique
+  as.Node()
+
+starwars_test_tree <- starw_split %>% 
+  testing() %>% 
+  rename(`_name` = "name", `_height` = "height") %>% 
+  rowid_to_column() %>% 
+  mutate(pathString = paste("StarWars_characters", species, sex, rowid, sep = "/")) %>%
+  select(-species, -sex, -`_name`, -rowid) %>% 
+  as.Node()
+
+starwars_train_tree$attributesAll
+```
+
+Nous érifions ainsi qu'aucun predicteur ne contient d'informations
+présrnte dans le résultat hierarchique.
+
+## Entraînement du modèle
+
+Ce `starwars_tree` peut maintenant être utilisé comme entrée pour `tabnet_fit()` :
+
+```{r model training}
+config <- tabnet_config(decision_width = 8, attention_width = 8, num_steps = 3, penalty = .003, cat_emb_dim = 2, valid_split = 0.2, learn_rate = 1e-3, lr_scheduler = "reduce_on_plateau", early_stopping_monitor = "valid_loss", early_stopping_patience = 4, verbose = FALSE)
+
+starw_model <- tabnet_fit(starwars_train_tree, config = config, epoch = 170, checkpoint_epochs = 25)
+
+```
+
+## Diagnostic du modèle
+
+Nous avons évité l'affichage verbeux du modèle, donc le premier diagnostic est de vérifier que le modèle n'est pas en sur-apprentissage, via le graphique de la fonction de perte.
+
+```{r}
+autoplot(starw_model)
+```
+
+Puis le graphique d'importance globale des variables nous donne un aperçu de la qualité du modèle :
+
+```{r}
+vip::vip(starw_model)
+```
+
+## Inférence avec le modèle hierarchique
+
+On démontre l'inférence sur le test-set
+```{r}
+starwars_hat <- bind_cols(
+    predict(starw_model, starwars_test_tree),
+    node_to_df(starwars_test_tree)$y
+  )
+tail(starwars_hat, n = 5)
+
+```
+
+Nous pouvons voir dans les messages de Warning que le dataset est un défi car beaucoup de nouveaux niveaux sont trouvés dans les prédicteurs dans le jeu de test. Le modèle fonctionne également très mal sur `level_2` 
+(`species`) et sur `level_3` (`sex`). Bien sûr ici l'exemple est surtout pédagogique sur un jeu de données non destiné à être modélisé.
+
+Malgré les performances, nous avons encore l'importance locale des caractéristiques dans le dataset complet ici :
+
+```{r}
+starwars_explain <- tabnet_explain(starw_model, starwars_test_tree)
+autoplot(starwars_explain)
+autoplot(starwars_explain, type = "steps")
+```
+
+Escomptez que votre propre jeu de données hiérarchique aura une meilleure réussite qu'avec le dataset `starwars`. 
+Mais dans cette aventure, vous avez appris beaucoup sur les contraintes et solutions de format de données, et vous avez maintenant une 
+nouvelle solution performante dans votre boite à outils.

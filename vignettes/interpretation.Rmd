@@ -1,0 +1,185 @@
+---
+title: "Outillage d'interpretation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Outillage d'interpretation}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = torch::torch_is_installed(),
+  out.width = "100%", 
+  out.height = "300px", 
+  fig.width = 14
+)
+```
+
+```{r setup}
+library(tabnet)
+library(tidyverse, warn.conflicts = FALSE)
+set.seed(1)
+torch::torch_manual_seed(1)
+```
+
+Tabnet se classe dans les modèles interprétable, du fait que l'architecture 
+du réseau sous-jacente utilise des masques de sélection de variables 
+qui peuvent aider à identifier les variables utilisées à chaque étape.
+
+Le papier de recherche définit également une mesure agrégée qui combine les masques des différentes étape en une seule mesure.
+
+Il est important de noter que la sélection de variables importantes par les masques est faite instance par instance. 
+Ainsi, vous pouvez identifier pour chaque observation, quelles variables ont été considérées comme 
+pertinentes.
+
+## Expérimentation
+
+Pour montrer comment utiliser les outils d'interprétation de `tabnet`, nous allons reproduire 2 expériences 
+en utilisant des jeux de données synthétiques très similaires à ceux qui ont été utilisés dans le papier de recherche.
+
+### Jeux de données
+
+Tout d'abord, voici les fonctions que nous utiliserons pour générer les données :
+  
+-   `make_syn2` : crée un jeu de données de 10 colonnes, mais seules les colonnes 3 à 6 sont 
+    utilisées pour calculer la variable à predire `y`. Il est similaire au jeu de données *Syn2* 
+    du papier.
+    
+-   `make_syn4` : crée un jeu de données de 10 colonnes aussi, mais la variable à prédire `y` dépend 
+    de la colonne 10: Si la valeur est positive, alors on utilise la somme des colonnes 1 et 2 
+    pour calculer le logit, sinon, on calcule un logit à partir des colonnes 5 et 6.
+
+
+```{r}
+logit_to_y <- function(logits) {
+  p <- exp(logits)/(1 + exp(logits))
+  y <- factor(ifelse(p > 0.5, "yes", "no"), levels = c("yes", "no"))
+  y
+}
+
+make_random_x <- function(n) {
+  x <- as.data.frame(lapply(1:10, function(x) rnorm(n)))
+  names(x) <- sprintf("V%02d", 1:10)
+  x
+}
+
+make_syn2 <- function(n = 5000) {
+  x <- make_random_x(n)
+  logits <- rowSums(x[,3:6])
+  x$y <- logit_to_y(logits)
+  x
+}
+
+make_syn4 <- function(n = 5000) {
+  x <- make_random_x(n)
+  logits <- ifelse(
+    x[,10] > 0,
+    rowSums(x[,1:2]),
+    rowSums(x[,5:6])
+  )
+  
+  x$y <- logit_to_y(logits)
+  x
+}
+```
+
+Maintenant, lançons la génération des jeux de données :
+
+```{r}
+syn2 <- make_syn2()
+syn4 <- make_syn4()
+```
+
+### Syn2
+
+Entraînons un modèle TabNet sur le jeu de données `syn2` et analysons les métriques d'interprétation.
+
+```{r}
+fit_syn2 <- tabnet_fit(y ~ ., syn2, epochs = 10, verbose = TRUE, device = "cpu")
+```
+
+Dans le graphique d'importance des variables, nous vérifions que, comme attendu, 
+les variables `V03-V06` sont parmi les plus importantes.
+
+```{r}
+vip::vip(fit_syn2)
+```
+
+Maintenant, visualisons le graphique des masques agrégés. Dans cette figure, on voit chaque observation 
+sur l'axe des x et chaque variable sur l'axe y. Les couleurs forment une carte de chaleur de
+l'importance de la variable.
+
+```{r}
+library(tidyverse)
+ex_syn2 <- tabnet_explain(fit_syn2, syn2)
+
+autoplot(ex_syn2)
+```
+
+Nous pouvons voir que la zone V03 à V06 concentre la plupart des intensités élevées, tandis 
+que les autres variables sont proches de 0. C'est le résultat attendu car c'est ce que nous 
+avons considéré lors de la construction du jeu de données.
+
+Ensuite, visualisons les masques d'attention pour chaque étape dans l'architecture.
+
+```{r}
+autoplot(ex_syn2, type="steps")
+```
+
+On peut voir que la première étape capte surtout du bruit, tandis que les deux étapes suivantes 
+se focalisent spécifiquement sur les variables importantes.
+
+## Syn 4
+
+Analysons maintenant les résultats pour le jeu de données *Syn4*. Ce jeu de données est 
+un peu plus compliqué à traiter par TabNet car il y a une forte interaction entre les 
+variables. En fonction de V10, différentes variables sont 
+utilisées pour créer la variable réponse et nous attendons de voir cela dans les masques.
+
+Lançons l'entraînement d'un modèle pendant 10 époques
+
+```{r}
+fit_syn4 <- tabnet_fit(y ~ ., syn4, epochs = 10, verbose = TRUE, device = "cpu")
+```
+
+Dans le graphique d'importance des variables, nous avons, comme attendu, une forte
+importance pour `V10`, et les autres fonctionnalités qui sont utilisées 
+conditionnellement, soit `V01-V02` soit `V05-V06`.
+
+
+```{r}
+vip::vip(fit_syn4)
+```
+
+Maintenant, visualisons les masques d'attention. Nous avons trié le jeu 
+de données sur la valeur de `V10` afin de visualiser facilement l'interaction.
+
+Nous avons également réduit à la 99ème quantile pour que les couleurs montrent 
+l'importance même en cas de fortes valeurs du maques.
+
+```{r}
+ex_syn4 <- tabnet_explain(fit_syn4, arrange(syn4, V10))
+
+autoplot(ex_syn4, quantile=.995)
+```
+
+Le graphique met en évidence que V10 est important pour toutes les observations. 
+Nous pouvons également voir que pour la moitié supérieure du jeu de données, `V05` et `V06` 
+sont les variables les plus importantes, tandis que 
+pour l'autre moitié, `V01` et `V02` sont les variables importantes.
+
+Visualisons maintenant les masques à chaque étape dans l'architecture.
+
+```{r}
+autoplot(ex_syn4, type="steps", quantile=.995)
+```
+
+Nous voyons que l'étape 1 et 3 se concentrent sur `V10`, mais sur différentes 
+variables supplémentaires, en fonction de `V10`. L'étape 2 semble avoir trouvé 
+du bruit dans `V08`, mais également un fort focus sur `V01-V02` et `V05-V06`.
