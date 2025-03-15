@@ -13,11 +13,12 @@ Description: La version française de l'implémentation des modèles 'TabNet' pa
     Il est aussi entièrement compatible avec l'écosystème 'tidymodels'.
 License: MIT + file LICENSE
 BugReports: https://github.com/cregouby/tabnet.fr/issues
-Language: fr_FR
+Language: fr
 Translates: tabnet (== 0.6.0)
 LazyData: true
 Imports:
-    rhelpi18n
+    tabnet,
+    rhelpi18n (>= 0.0.0.9000)
 Remotes:  
     eliocamp/rhelpi18n
 RoxygenNote: 7.3.2
