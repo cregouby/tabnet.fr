@@ -1,0 +1,235 @@
+---
+title: "Utilisation de la perte ROC AUM pour la classification binaire déséquilibrée"
+vignette: >
+  %\VignetteIndexEntry{Using ROC AUM loss for imbalanced binary classification}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+format: 
+  html:
+  fig-width: 9
+  fig-height: 6
+  fig-cap-location: "top"
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
+    eval: true
+---
+  
+```{r setup}
+library(tabnet)
+suppressPackageStartupMessages(library(tidymodels))
+library(modeldata)
+data("lending_club", package = "modeldata")
+set.seed(20250409)
+```
+
+::: callout-note
+Cette vignette est une suite de `vignette("tidymodels-interface")`. Nous vous recommandons donc vivement de commencer par celle-ci pour être à jour avec cette vignette.
+:::
+  
+## Introduction
+  
+  Le jeu de données `lending_club` précédemment utilisé est fortement déséquilibré, ce qui rend la tâche de classification binaire particulièrement difficile. Bien que nous ayons obtenu une précision assez bonne avec le modèle par défaut, la métrique `roc_auc()` était mauvaise, principalement à cause de ce problème de déséquilibre.
+
+Ici, nous allons voir comment les fonctionnalités de tabnet permettent d'améliorer les performances sur ce type de problèmes de classification.
+
+## Mon problème est-il déséquilibré ?
+
+Le désequilibre de la variable cible `Class` peut être évaluée via le rapport de classe :
+  
+  ```{r}
+class_ratio <- lending_club |> 
+  summarise(sum( Class == "good") / sum( Class == "bad")) |> 
+  pull() 
+
+class_ratio
+```
+
+Avec un rapport de classe de 18,1, la variable cible est sérieusement déséquilibrée, ce qui rend la classe minoritaire beaucoup plus difficile à modéliser.
+
+## Solutions pour améliorer les modèles de classification déséquilibrée
+
+Premièrement, la solution classique à ce problème est le surechantillonnage de la classe minoritaire et/ou le sous-échantillonnage de la classe majoritaire dans les données d'entraînement. Nous ne le traiterons pas ici.
+
+La deuxième solution est le pondération des cas. Comme {tidymodels} offre le cadre pour gérer ces pondérations, nous allons d'abord l'utiliser pour comparer deux familles de modèles - XGBoost et Tabnet - avec cette fonctionnalité.
+
+Enfin, nous souhaitons également **optimiser** le modèle selon la métrique que nous ciblons. Comme les métriques choisies pour les ensembles de données déséquilibrés sont `roc_auc()` ou `roc_pr()`, nous voulons une **fonction de perte** qui en soit un proxy. Cette perte est disponible dans {tabnet} avec `nn_aum_loss()` de [Optimizing ROC Curves with a Sort-Based Surrogate Loss for Binary Classification and Changepoint Detection (J Hillman, TD Hocking)](https://jmlr.org/papers/v24/21-0751.html).
+
+## Utilisation de la métrique AUC et des courbes `pr_curve()`
+
+Mesurer l'AUC_ROC ou l'AUC_PR est nécessairement associé à la visualisation de la `pr_curve()`.
+
+Nous allons baser nos modèles sur deux workflows différents, l'un pour tabnet, l'autre pour XGBoost. Le bloc de code de départ est assez dense, mais il s'agit principalement d'une copie de la vignette précédente.
+
+```{r}
+lending_club <- lending_club |>
+  mutate(
+    case_wts = if_else(Class == "bad", class_ratio, 1),
+    case_wts = importance_weights(case_wts)
+  )
+
+split <- initial_split(lending_club, strata = Class)
+train <- training(split)
+test  <- testing(split)
+
+tab_rec <- train |>
+  recipe() |>
+  update_role(Class, new_role = "outcome") |>
+  update_role(-has_role(c("outcome", "id", "case_weights")), new_role = "predictor")
+
+xgb_rec <- tab_rec |> 
+  step_dummy(term, sub_grade, addr_state, verification_status, emp_length)
+
+tab_mod <- tabnet(epochs = 100) |> 
+  set_engine("torch", device = "cpu") |> 
+  set_mode("classification")
+
+xgb_mod <- boost_tree(trees = 100) |> 
+  set_engine("xgboost") |> 
+  set_mode("classification")
+
+tab_wf <- workflow() |> 
+  add_model(tab_mod) |> 
+  add_recipe(tab_rec) |> 
+  add_case_weights(case_wts)
+
+xgb_wf <- workflow() |> 
+  add_model(xgb_mod) |> 
+  add_recipe(xgb_rec) |> 
+  add_case_weights(case_wts)
+```
+
+Quelques détails sont à noter
+
+-   nous calculons et marquons comme `importance_weight()` une nouvelle colonne `case_wts` dans le jeu de données `lending_club`.
+
+-   cette colonne est exclue du rôle des prédicteurs dans `recipe()`.
+
+-   nous mentionnons explicitement ce rôle pour la colonne dans chaque `workflow()` via `add_case_weights()`.
+
+Nous pouvons maintenant ajuster chaque modèle avec `fit()` et tracer la courbe de précision-rappel sur l'ensemble de test :
+  
+```{r}
+#| label: "vanilia_models_fitting"
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Tabnet, sans pondération, perte par défaut"
+#|   - "XGBoost, sans pondération"
+#| 
+tab_fit <- tab_wf |> fit(train)
+xgb_fit <- xgb_wf |> fit(train)
+
+tab_test <- tab_fit |> augment(test)
+xgb_test <- xgb_fit |> augment(test)
+
+tab_test |> 
+  pr_curve(Class, .pred_good) |> 
+  autoplot()
+
+xgb_test |>
+  pr_curve(Class, .pred_good) |>
+  autoplot()
+
+```
+
+Les deux modèles retournent des résultats décevants.
+
+## Pondération des cas
+
+Le fait de pondérer chaque observation par le rapport de classe de la classe est disponible dans {tabnet} via
+
+-   la désignation d'une variable comme variable de rapport de classe via `workflow::add_case_weights()`
+
+-   l'utilisation de la variable `case_weight` lors de l'inférence via le paramètre `case_weights =` dans les fonctions qui le permettent.
+
+Passons-y :
+
+```{r}
+#| label: "case-weights_prediction"
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Tabnet, avec pondération, perte par défaut"
+#|   - "XGBoost, avec pondération"
+#| 
+tab_test |> 
+  pr_curve(Class, .pred_good, case_weights = case_wts) |> 
+  autoplot() 
+
+xgb_test |>
+  pr_curve(Class, .pred_good, case_weights = case_wts) |>
+  autoplot() 
+```
+
+L'amélioration sur la `pr_curve()` est impressionnante pour les deux modèles, Tabnet reste cependant derrière XGBoost ici[^1].
+
+[^1]: Ou pourrait devenir leader si vous modifiez la graine aléatoire initiale.
+
+## Perte ROC_AUM
+
+{tabnet} implémente la perte ROC AUM qui orientera l'optimiseur torch vers la meilleure AUC possible. Utilisons-la pour la comparer aux modèles précédents :
+
+```{r}
+#| label: "AUM_based_model_fit"
+# configure la perte AUM
+tab_aum_mod <- tabnet(epochs = 100, loss = tabnet::nn_aum_loss, learn_rate = 0.02) |> 
+  set_engine("torch", device = "cpu") |> 
+  set_mode("classification")
+
+# dérive un workflow
+tab_aum_wf <- workflow() |> 
+  add_model(tab_aum_mod) |> 
+  add_recipe(tab_rec) |> 
+  add_case_weights(case_wts)
+
+# ajuste et enrichit l'ensemble de test avec les prédictions
+tab_aum_fit <- tab_aum_wf |> fit(train)
+tab_aum_test <- tab_aum_fit |> augment(test)
+```
+
+Comparons maintenant les résultats sur la courbe PR avec la perte par défaut :
+  
+  ```{r}
+#| label: "AUM_model_pr_curve"
+#| layout-ncol: 2
+#| fig-cap: 
+  #|   - "Tabnet, sans pondération, perte par défaut"
+  #|   - "Tabnet, sans pondération, perte ROC_AUM"
+#|   
+tab_test |> 
+  pr_curve(Class, .pred_good) |> 
+  autoplot() 
+
+tab_aum_test |> 
+  pr_curve(Class, .pred_good) |> 
+  autoplot() 
+```
+
+Nous pouvons observer une amélioration réelle[^2] avec la perte AUM, par rapport à la perte par défaut `nn_bce_loss()`, mais un rappel globalement encore faible.
+
+[^2]: Avec un niveau d'amélioration sensible à la graine aléatoire.
+
+## Tous ensemble
+
+Rien n'empêche d'utiliser les deux fonctionnalités, car elles sont indépendantes. C'est ce que nous faisons ici. De plus, cela ne nécessite pas de calcul supplémentaire, car c'est fait post-inférence.
+
+```{r}
+#| label: "AUM_and_case-weights_prediction"
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Tabnet, avec pondération, perte par défaut"
+#|   - "Tabnet, avec pondération, perte ROC_AUM"
+#| 
+tab_test |> 
+  pr_curve(Class, .pred_good, case_weights = case_wts) |> 
+  autoplot() 
+
+
+tab_aum_test |> 
+  pr_curve(Class, .pred_good, case_weights = case_wts) |> 
+  autoplot() 
+```
+
+Ici, l'amélioration du rappel est impressionnante, plaçant le modèle Tabnet bien au-dessus de tout modèle concurrent expérimenté[^3].
+
+[^3]: Uniquement dans un but éducatif et reproductible.
