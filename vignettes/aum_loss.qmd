@@ -143,7 +143,7 @@ Le fait de pondérer chaque observation par le rapport de classe de la classe es
 
 -   l'utilisation de la variable `case_weight` lors de l'inférence via le paramètre `case_weights =` dans les fonctions qui le permettent.
 
-Passons-y :
+Pour l'exemple qui nous occupe :
 
 ```{r}
 #| label: "case-weights_prediction"
