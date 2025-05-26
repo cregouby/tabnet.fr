@@ -189,12 +189,12 @@ tab_aum_test <- tab_aum_fit |> augment(test)
 
 Comparons maintenant les résultats sur la courbe PR avec la perte par défaut :
   
-  ```{r}
+```{r}
 #| label: "AUM_model_pr_curve"
 #| layout-ncol: 2
 #| fig-cap: 
-  #|   - "Tabnet, sans pondération, perte par défaut"
-  #|   - "Tabnet, sans pondération, perte ROC_AUM"
+#|   - "Tabnet, sans pondération, perte par défaut"
+#|   - "Tabnet, sans pondération, perte ROC_AUM"
 #|   
 tab_test |> 
   pr_curve(Class, .pred_good) |> 
@@ -207,11 +207,11 @@ tab_aum_test |>
 
 Nous pouvons observer une amélioration réelle[^2] avec la perte AUM, par rapport à la perte par défaut `nn_bce_loss()`, mais un rappel globalement encore faible.
 
-[^2]: Avec un niveau d'amélioration sensible à la graine aléatoire.
+[^2]: Avec un niveau d'amélioration qui est sensible à la graine aléatoire.
 
 ## Tous ensemble
 
-Rien n'empêche d'utiliser les deux fonctionnalités, car elles sont indépendantes. C'est ce que nous faisons ici. De plus, cela ne nécessite pas de calcul supplémentaire, car c'est fait post-inférence.
+Rien n'empêche d'utiliser les deux fonctionnalités, car elles sont indépendantes. C'est ce que nous allons faire ici. De plus, cela ne nécessite pas de calcul supplémentaire, car la modification a lieu post-inférence.
 
 ```{r}
 #| label: "AUM_and_case-weights_prediction"
@@ -220,13 +220,13 @@ Rien n'empêche d'utiliser les deux fonctionnalités, car elles sont indépendan
 #|   - "Tabnet, avec pondération, perte par défaut"
 #|   - "Tabnet, avec pondération, perte ROC_AUM"
 #| 
-tab_test |> 
+tab_test |> s
   pr_curve(Class, .pred_good, case_weights = case_wts) |> 
   autoplot() 
 
 
 tab_aum_test |> 
-  pr_curve(Class, .pred_good, case_weights = case_wts) |> 
+  pr_curve(Class, .pred_good, case_weightss = case_wts) |> 
   autoplot() 
 ```
 
